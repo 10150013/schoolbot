@@ -1,0 +1,109 @@
+<template>
+<style>
+#root { position: absolute; inset: 0; font-family: 'Archivo Black', 'Inter', sans-serif; }
+.badge { position: absolute; left: 0; width: 1080px; top: 176px; text-align: center; }
+.badge span { display: inline-block; padding: 8px 32px; border-radius: 40px; background: #00ebff; color: #0f0820; font: 800 30px 'Inter', sans-serif; letter-spacing: .05em; }
+.bar { position: absolute; left: 236px; top: 246px; width: 608px; height: 10px; display: flex; gap: 6px; }
+.bar i { flex: 1; border-radius: 5px; background: #5a5082; overflow: hidden; position: relative; display: block; }
+.bar b { position: absolute; left: 0; top: 0; bottom: 0; width: 100%; background: #00ebff; display: block; }
+.title { position: absolute; left: 0; width: 1080px; top: 278px; text-align: center; line-height: 1.04; }
+.title .l { display: block; font-size: 84px; color: #fff; paint-order: stroke fill; -webkit-text-stroke: 10px #0c061c; letter-spacing: .01em; }
+.title .l2 { color: #00ebff; }
+.title .w { display: inline-block; margin: 0 .15em; }
+.vis { position: absolute; left: 94px; top: 455px; width: 891px; height: 660px; }
+.vis svg { width: 891px; height: 660px; overflow: hidden; display: block; }
+.lbl { position: absolute; left: 0; width: 1080px; top: 468px; text-align: center; }
+.lbl span { display: inline-block; padding: 8px 30px; border-radius: 34px; background: #fff; color: #0f0820; font: 800 36px 'Inter', sans-serif; }
+.stk { position: absolute; left: 0; width: 1080px; top: 1092px; text-align: center; }
+.stk span { display: inline-block; padding: 12px 34px; border-radius: 28px; background: #ffe200; border: 6px solid #fff; color: #0f0820; font: 900 40px 'Inter', sans-serif; }
+.cta-btn { position: absolute; left: 190px; top: 490px; width: 700px; height: 150px; border-radius: 75px; background: #fe2c55; border: 8px solid #fff; color: #fff; font-size: 84px; line-height: 134px; text-align: center; }
+.cta-save { position: absolute; left: 0; width: 1080px; top: 676px; text-align: center; font-size: 50px; color: #fff; paint-order: stroke fill; -webkit-text-stroke: 8px #0c061c; }
+.cta-next { position: absolute; left: 0; width: 1080px; top: 745px; text-align: center; }
+.cta-next span { display: inline-block; padding: 10px 34px; border-radius: 40px; background: #ffe200; color: #0f0820; font: 800 40px 'Inter', sans-serif; }
+.cta-em { position: absolute; top: 985px; font-size: 90px; line-height: 1; color: #fff; }
+.cta-disc { position: absolute; left: 0; width: 1080px; top: 1105px; text-align: center; font: 800 30px/1.3 'Inter', sans-serif; color: #fff; }
+</style>
+<div id="root" data-composition-id="s0" data-width="1080" data-height="1920">
+<div id="s0-content" class="clip" data-start="0" data-duration="3.624"><div id="s0-badge" class="badge"><span>HOW IT WORKS</span></div><div class="bar"><i><b id="s0-seg0" style="width:0%"></b></i><i><b id="s0-seg1" style="width:0%"></b></i><i><b id="s0-seg2" style="width:0%"></b></i><i><b id="s0-seg3" style="width:0%"></b></i><i><b id="s0-seg4" style="width:0%"></b></i></div><div id="s0-title" class="title"><span class="l l1"><span class="w">YOUR</span><span class="w">ENGINE</span></span><span class="l l2"><span class="w">BREATHES</span><span class="w">AIR</span></span></div><div id="s0-vis" class="vis" data-layout-allow-overflow><svg viewBox="0 50 1080 800" xmlns="http://www.w3.org/2000/svg"><polyline points="60.0,160.0 880.0,160.0 880.0,330.0 540.0,330.0 540.0,470.0" fill="none" stroke="#2c3044" stroke-width="56" stroke-linecap="round" stroke-linejoin="round"/><rect x="40.0" y="90.0" width="260.0" height="150.0" rx="24" fill="#00bed7" stroke-width="6"/><text x="170" y="165" font-size="36" font-family="'Inter', sans-serif" font-weight="800" fill="#0c061c" text-anchor="middle" dominant-baseline="central">AIR FILTER</text><rect x="360.0" y="130.0" width="200.0" height="60.0" rx="8" fill="#3c4054"/><rect x="400.0" y="100.0" width="120.0" height="120.0" rx="14" fill="#b6ff00" stroke-width="6"/><text x="460" y="160" font-size="40" font-family="'Inter', sans-serif" font-weight="800" fill="#0c061c" text-anchor="middle" dominant-baseline="central">MAF</text><rect x="660.0" y="100.0" width="180.0" height="120.0" rx="18" fill="#ff8c00" stroke-width="6"/><g id="s0-bf"><line x1="706" y1="182" x2="794" y2="138" stroke="#0c061c" stroke-width="10" stroke-linecap="round"/></g><rect x="230.0" y="440.0" width="620.0" height="80.0" rx="24" fill="#ff3c96" stroke-width="6"/><text x="540" y="480" font-size="36" font-family="'Inter', sans-serif" font-weight="800" fill="#0c061c" text-anchor="middle" dominant-baseline="central">INTAKE MANIFOLD</text><rect x="270.0" y="520.0" width="40.0" height="130.0" rx="6" fill="#d23c8c"/><rect x="228.0" y="650.0" width="124.0" height="160.0" rx="14" fill="#af64ff" stroke-width="6" id="s0-cy0"/><rect x="246.0" y="700.0" width="88.0" height="40.0" rx="6" fill="#dcdeeb" id="s0-pi0"/><rect x="410.0" y="520.0" width="40.0" height="130.0" rx="6" fill="#d23c8c"/><rect x="368.0" y="650.0" width="124.0" height="160.0" rx="14" fill="#af64ff" stroke-width="6" id="s0-cy1"/><rect x="386.0" y="700.0" width="88.0" height="40.0" rx="6" fill="#dcdeeb" id="s0-pi1"/><rect x="630.0" y="520.0" width="40.0" height="130.0" rx="6" fill="#d23c8c"/><rect x="588.0" y="650.0" width="124.0" height="160.0" rx="14" fill="#af64ff" stroke-width="6" id="s0-cy2"/><rect x="606.0" y="700.0" width="88.0" height="40.0" rx="6" fill="#dcdeeb" id="s0-pi2"/><rect x="770.0" y="520.0" width="40.0" height="130.0" rx="6" fill="#d23c8c"/><rect x="728.0" y="650.0" width="124.0" height="160.0" rx="14" fill="#af64ff" stroke-width="6" id="s0-cy3"/><rect x="746.0" y="700.0" width="88.0" height="40.0" rx="6" fill="#dcdeeb" id="s0-pi3"/><g id="s0-fl0" opacity="0"><polygon points="290.0,606.0 296.0,634.0 324.0,640.0 296.0,646.0 290.0,674.0 284.0,646.0 256.0,640.0 284.0,634.0" fill="#fff" stroke-linejoin="round"/></g><g id="s0-fl1" opacity="0"><polygon points="430.0,606.0 436.0,634.0 464.0,640.0 436.0,646.0 430.0,674.0 424.0,646.0 396.0,640.0 424.0,634.0" fill="#fff" stroke-linejoin="round"/></g><g id="s0-fl2" opacity="0"><polygon points="650.0,606.0 656.0,634.0 684.0,640.0 656.0,646.0 650.0,674.0 644.0,646.0 616.0,640.0 644.0,634.0" fill="#fff" stroke-linejoin="round"/></g><g id="s0-fl3" opacity="0"><polygon points="790.0,606.0 796.0,634.0 824.0,640.0 796.0,646.0 790.0,674.0 784.0,646.0 756.0,640.0 784.0,634.0" fill="#fff" stroke-linejoin="round"/></g><ellipse cx="0.0" cy="0.0" rx="9.0" ry="9.0" fill="#c8f5ff" id="s0-ap0" opacity="0"/><ellipse cx="0.0" cy="0.0" rx="9.0" ry="9.0" fill="#c8f5ff" id="s0-ap1" opacity="0"/><ellipse cx="0.0" cy="0.0" rx="9.0" ry="9.0" fill="#c8f5ff" id="s0-ap2" opacity="0"/><ellipse cx="0.0" cy="0.0" rx="9.0" ry="9.0" fill="#c8f5ff" id="s0-ap3" opacity="0"/><ellipse cx="0.0" cy="0.0" rx="9.0" ry="9.0" fill="#c8f5ff" id="s0-ap4" opacity="0"/><ellipse cx="0.0" cy="0.0" rx="9.0" ry="9.0" fill="#c8f5ff" id="s0-ap5" opacity="0"/><ellipse cx="0.0" cy="0.0" rx="9.0" ry="9.0" fill="#c8f5ff" id="s0-ap6" opacity="0"/><ellipse cx="0.0" cy="0.0" rx="9.0" ry="9.0" fill="#c8f5ff" id="s0-ap7" opacity="0"/><ellipse cx="0.0" cy="0.0" rx="9.0" ry="9.0" fill="#c8f5ff" id="s0-ap8" opacity="0"/><ellipse cx="0.0" cy="0.0" rx="9.0" ry="9.0" fill="#c8f5ff" id="s0-ap9" opacity="0"/><ellipse cx="0.0" cy="0.0" rx="9.0" ry="9.0" fill="#c8f5ff" id="s0-ap10" opacity="0"/><ellipse cx="0.0" cy="0.0" rx="9.0" ry="9.0" fill="#c8f5ff" id="s0-ap11" opacity="0"/><ellipse cx="0.0" cy="0.0" rx="9.0" ry="9.0" fill="#c8f5ff" id="s0-ap12" opacity="0"/><ellipse cx="0.0" cy="0.0" rx="9.0" ry="9.0" fill="#c8f5ff" id="s0-ap13" opacity="0"/><ellipse cx="0.0" cy="0.0" rx="9.0" ry="9.0" fill="#c8f5ff" id="s0-ap14" opacity="0"/><ellipse cx="0.0" cy="0.0" rx="9.0" ry="9.0" fill="#c8f5ff" id="s0-ap15" opacity="0"/></svg></div></div>
+</div>
+<script>
+const tl = gsap.timeline({ paused: true });
+tl.to("#s0-content", { opacity: 0, filter: "blur(8px)", duration: .15, ease: "power2.in" }, 3.474);
+tl.fromTo("#s0-ap0", {"x": 60.0, "y": 160.0, "opacity": 1}, {"x": 880.0, "y": 160.0, "opacity": 1, "duration": 3.1538461538461537, "ease": "none"}, 0.000);
+tl.to("#s0-ap0", {"x": 880.0, "y": 282.24, "duration": 0.47015384615384637, "ease": "none"}, 3.154);
+tl.fromTo("#s0-ap1", {"x": 130.0, "y": 160.0, "opacity": 1}, {"x": 880.0, "y": 160.0, "opacity": 1, "duration": 2.8846153846153846, "ease": "none"}, 0.000);
+tl.to("#s0-ap1", {"x": 880.0, "y": 330.0, "duration": 0.6538461538461539, "ease": "none"}, 2.885);
+tl.to("#s0-ap1", {"x": 857.76, "y": 330.0, "duration": 0.08553846153846179, "ease": "none"}, 3.538);
+tl.fromTo("#s0-ap2", {"x": 200.0, "y": 160.0, "opacity": 1}, {"x": 880.0, "y": 160.0, "opacity": 1, "duration": 2.6153846153846154, "ease": "none"}, 0.000);
+tl.to("#s0-ap2", {"x": 880.0, "y": 330.0, "duration": 0.6538461538461539, "ease": "none"}, 2.615);
+tl.to("#s0-ap2", {"x": 787.76, "y": 330.0, "duration": 0.35476923076923095, "ease": "none"}, 3.269);
+tl.fromTo("#s0-ap3", {"x": 270.0, "y": 160.0, "opacity": 1}, {"x": 880.0, "y": 160.0, "opacity": 1, "duration": 2.3461538461538463, "ease": "none"}, 0.000);
+tl.to("#s0-ap3", {"x": 880.0, "y": 330.0, "duration": 0.6538461538461539, "ease": "none"}, 2.346);
+tl.to("#s0-ap3", {"x": 717.76, "y": 330.0, "duration": 0.6240000000000001, "ease": "none"}, 3.000);
+tl.fromTo("#s0-ap4", {"x": 340.0, "y": 160.0, "opacity": 1}, {"x": 880.0, "y": 160.0, "opacity": 1, "duration": 2.076923076923077, "ease": "none"}, 0.000);
+tl.to("#s0-ap4", {"x": 880.0, "y": 330.0, "duration": 0.6538461538461539, "ease": "none"}, 2.077);
+tl.to("#s0-ap4", {"x": 647.76, "y": 330.0, "duration": 0.8932307692307693, "ease": "none"}, 2.731);
+tl.fromTo("#s0-ap5", {"x": 410.0, "y": 160.0, "opacity": 1}, {"x": 880.0, "y": 160.0, "opacity": 1, "duration": 1.8076923076923077, "ease": "none"}, 0.000);
+tl.to("#s0-ap5", {"x": 880.0, "y": 330.0, "duration": 0.6538461538461539, "ease": "none"}, 1.808);
+tl.to("#s0-ap5", {"x": 577.76, "y": 330.0, "duration": 1.1624615384615384, "ease": "none"}, 2.462);
+tl.fromTo("#s0-ap6", {"x": 480.0, "y": 160.0, "opacity": 1}, {"x": 880.0, "y": 160.0, "opacity": 1, "duration": 1.5384615384615385, "ease": "none"}, 0.000);
+tl.to("#s0-ap6", {"x": 880.0, "y": 330.0, "duration": 0.6538461538461539, "ease": "none"}, 1.538);
+tl.to("#s0-ap6", {"x": 540.0, "y": 330.0, "duration": 1.3076923076923077, "ease": "none"}, 2.192);
+tl.to("#s0-ap6", {"x": 540.0, "y": 362.24, "duration": 0.12400000000000011, "ease": "none"}, 3.500);
+tl.fromTo("#s0-ap7", {"x": 550.0, "y": 160.0, "opacity": 1}, {"x": 880.0, "y": 160.0, "opacity": 1, "duration": 1.2692307692307692, "ease": "none"}, 0.000);
+tl.to("#s0-ap7", {"x": 880.0, "y": 330.0, "duration": 0.6538461538461539, "ease": "none"}, 1.269);
+tl.to("#s0-ap7", {"x": 540.0, "y": 330.0, "duration": 1.3076923076923077, "ease": "none"}, 1.923);
+tl.to("#s0-ap7", {"x": 540.0, "y": 432.24, "duration": 0.3932307692307693, "ease": "none"}, 3.231);
+tl.fromTo("#s0-ap8", {"x": 620.0, "y": 160.0, "opacity": 1}, {"x": 880.0, "y": 160.0, "opacity": 1, "duration": 1.0, "ease": "none"}, 0.000);
+tl.to("#s0-ap8", {"x": 880.0, "y": 330.0, "duration": 0.6538461538461539, "ease": "none"}, 1.000);
+tl.to("#s0-ap8", {"x": 540.0, "y": 330.0, "duration": 1.3076923076923077, "ease": "none"}, 1.654);
+tl.to("#s0-ap8", {"x": 540.0, "y": 470.0, "duration": 0.5384615384615384, "ease": "none"}, 2.962);
+tl.to("#s0-ap8", {"x": 507.7857610908095, "y": 471.28856955636763, "duration": 0.12400000000000011, "ease": "none"}, 3.500);
+tl.fromTo("#s0-ap9", {"x": 690.0, "y": 160.0, "opacity": 1}, {"x": 880.0, "y": 160.0, "opacity": 1, "duration": 0.7307692307692307, "ease": "none"}, 0.000);
+tl.to("#s0-ap9", {"x": 880.0, "y": 330.0, "duration": 0.6538461538461539, "ease": "none"}, 0.731);
+tl.to("#s0-ap9", {"x": 540.0, "y": 330.0, "duration": 1.3076923076923077, "ease": "none"}, 1.385);
+tl.to("#s0-ap9", {"x": 540.0, "y": 470.0, "duration": 0.5384615384615384, "ease": "none"}, 2.692);
+tl.to("#s0-ap9", {"x": 438.17987857074195, "y": 479.2563746753871, "duration": 0.3932307692307693, "ease": "none"}, 3.231);
+tl.fromTo("#s0-ap10", {"x": 760.0, "y": 160.0, "opacity": 1}, {"x": 880.0, "y": 160.0, "opacity": 1, "duration": 0.46153846153846156, "ease": "none"}, 0.000);
+tl.to("#s0-ap10", {"x": 880.0, "y": 330.0, "duration": 0.6538461538461539, "ease": "none"}, 0.462);
+tl.to("#s0-ap10", {"x": 540.0, "y": 330.0, "duration": 1.3076923076923077, "ease": "none"}, 1.115);
+tl.to("#s0-ap10", {"x": 540.0, "y": 470.0, "duration": 0.5384615384615384, "ease": "none"}, 2.423);
+tl.to("#s0-ap10", {"x": 650.0, "y": 480.0000000000001, "duration": 0.42482157758412575, "ease": "none"}, 2.962);
+tl.to("#s0-ap10", {"x": 650.0, "y": 541.7863898281274, "duration": 0.23763996087741246, "ease": "none"}, 3.386);
+tl.fromTo("#s0-ap11", {"x": 830.0, "y": 160.0, "opacity": 1}, {"x": 880.0, "y": 160.0, "opacity": 1, "duration": 0.19230769230769232, "ease": "none"}, 0.000);
+tl.to("#s0-ap11", {"x": 880.0, "y": 330.0, "duration": 0.6538461538461539, "ease": "none"}, 0.192);
+tl.to("#s0-ap11", {"x": 540.0, "y": 330.0, "duration": 1.3076923076923077, "ease": "none"}, 0.846);
+tl.to("#s0-ap11", {"x": 540.0, "y": 470.0, "duration": 0.5384615384615384, "ease": "none"}, 2.154);
+tl.to("#s0-ap11", {"x": 782.0464402407663, "y": 479.68185760963064, "duration": 0.931692307692308, "ease": "none"}, 2.692);
+tl.fromTo("#s0-ap12", {"x": 880.0, "y": 180.0, "opacity": 1}, {"x": 880.0, "y": 330.0, "opacity": 1, "duration": 0.5769230769230769, "ease": "none"}, 0.000);
+tl.to("#s0-ap12", {"x": 540.0, "y": 330.0, "duration": 1.3076923076923077, "ease": "none"}, 0.577);
+tl.to("#s0-ap12", {"x": 540.0, "y": 470.0, "duration": 0.5384615384615384, "ease": "none"}, 1.885);
+tl.to("#s0-ap12", {"x": 290.0, "y": 480.00000000000006, "duration": 0.9623073848612929, "ease": "none"}, 2.423);
+tl.to("#s0-ap12", {"x": 290.0, "y": 542.0400799360641, "duration": 0.23861569206178457, "ease": "none"}, 3.385);
+tl.fromTo("#s0-ap13", {"x": 880.0, "y": 250.0, "opacity": 1}, {"x": 880.0, "y": 330.0, "opacity": 1, "duration": 0.3076923076923077, "ease": "none"}, 0.000);
+tl.to("#s0-ap13", {"x": 540.0, "y": 330.0, "duration": 1.3076923076923077, "ease": "none"}, 0.308);
+tl.to("#s0-ap13", {"x": 540.0, "y": 470.0, "duration": 0.5384615384615384, "ease": "none"}, 1.615);
+tl.to("#s0-ap13", {"x": 430.0, "y": 480.0000000000001, "duration": 0.42482157758412575, "ease": "none"}, 2.154);
+tl.to("#s0-ap13", {"x": 430, "y": 700, "duration": 0.8461538461538461, "ease": "none"}, 2.579);
+tl.set("#s0-ap13", {"x": 60, "y": 160}, 3.425);
+tl.to("#s0-ap13", {"x": 111.78638982812738, "y": 160.0, "duration": 0.19917842241587458, "ease": "none"}, 3.425);
+tl.fromTo("#s0-ap14", {"x": 880.0, "y": 320.0, "opacity": 1}, {"x": 880.0, "y": 330.0, "opacity": 1, "duration": 0.038461538461538464, "ease": "none"}, 0.000);
+tl.to("#s0-ap14", {"x": 540.0, "y": 330.0, "duration": 1.3076923076923077, "ease": "none"}, 0.038);
+tl.to("#s0-ap14", {"x": 540.0, "y": 470.0, "duration": 0.5384615384615384, "ease": "none"}, 1.346);
+tl.to("#s0-ap14", {"x": 650.0, "y": 480.0000000000001, "duration": 0.42482157758412575, "ease": "none"}, 1.885);
+tl.to("#s0-ap14", {"x": 650, "y": 700, "duration": 0.8461538461538461, "ease": "none"}, 2.309);
+tl.set("#s0-ap14", {"x": 60, "y": 160}, 3.156);
+tl.to("#s0-ap14", {"x": 181.78638982812737, "y": 160.0, "duration": 0.46840919164664374, "ease": "none"}, 3.156);
+tl.fromTo("#s0-ap15", {"x": 820.0, "y": 330.0, "opacity": 1}, {"x": 540.0, "y": 330.0, "opacity": 1, "duration": 1.0769230769230769, "ease": "none"}, 0.000);
+tl.to("#s0-ap15", {"x": 540.0, "y": 470.0, "duration": 0.5384615384615384, "ease": "none"}, 1.077);
+tl.to("#s0-ap15", {"x": 790.0, "y": 480.00000000000006, "duration": 0.9623073848612929, "ease": "none"}, 1.615);
+tl.to("#s0-ap15", {"x": 790, "y": 700, "duration": 0.8461538461538461, "ease": "none"}, 2.578);
+tl.set("#s0-ap15", {"x": 60, "y": 160}, 3.424);
+tl.to("#s0-ap15", {"x": 112.0400799360639, "y": 160.0, "duration": 0.2001541536002458, "ease": "none"}, 3.424);
+tl.to("#s0-pi0", {"y": 22, "duration": 0.26, "ease": "sine.inOut", "repeat": 13, "yoyo": true}, 0.000);
+tl.to("#s0-pi1", {"y": 22, "duration": 0.26, "ease": "sine.inOut", "repeat": 13, "yoyo": true}, 0.080);
+tl.to("#s0-pi2", {"y": 22, "duration": 0.26, "ease": "sine.inOut", "repeat": 13, "yoyo": true}, 0.160);
+tl.to("#s0-pi3", {"y": 22, "duration": 0.26, "ease": "sine.inOut", "repeat": 13, "yoyo": true}, 0.240);
+window.__timelines["s0"] = tl;
+</script>
+</template>

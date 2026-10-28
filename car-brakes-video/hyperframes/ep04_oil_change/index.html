@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=1080, height=1920" />
+<script src="assets/vendor/gsap.min.js"></script>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html, body { width: 1080px; height: 1920px; overflow: hidden; background: #0e0a24; }
+#bg { position: absolute; inset: 0; background: linear-gradient(180deg, #0e0a24 0%, #2c0e4a 100%); }
+#stripes { position: absolute; left: -2400px; top: -200px; width: 5200px; height: 2400px; background: repeating-linear-gradient(115deg, rgba(255,255,255,.035) 0 40px, rgba(255,255,255,0) 40px 80px); }
+#glowwrap { position: absolute; left: 0; top: 0; width: 1080px; height: 1920px; }
+.glow { position: absolute; left: -200px; top: 190px; width: 1480px; height: 1480px; border-radius: 50%; opacity: 0; }
+#vignette { position: absolute; inset: 0; background: radial-gradient(ellipse at 50% 45%, rgba(0,0,0,0) 45%, rgba(0,0,0,.5) 100%); }
+</style>
+</head>
+<body>
+<div id="root" data-composition-id="main" data-start="0" data-duration="38.703" data-width="1080" data-height="1920">
+<div id="bg"></div>
+<div id="stripes"></div>
+<div id="glowwrap"><div id="glow0" class="glow" style="background:radial-gradient(circle at 50% 50%, rgba(255,226,0,.62) 0%, rgba(255,226,0,0) 62%)"></div><div id="glow1" class="glow" style="background:radial-gradient(circle at 50% 50%, rgba(255,60,150,.62) 0%, rgba(255,60,150,0) 62%)"></div><div id="glow2" class="glow" style="background:radial-gradient(circle at 50% 50%, rgba(0,235,255,.62) 0%, rgba(0,235,255,0) 62%)"></div><div id="glow3" class="glow" style="background:radial-gradient(circle at 50% 50%, rgba(255,140,0,.62) 0%, rgba(255,140,0,0) 62%)"></div><div id="glow4" class="glow" style="background:radial-gradient(circle at 50% 50%, rgba(175,100,255,.62) 0%, rgba(175,100,255,0) 62%)"></div><div id="glow5" class="glow" style="background:radial-gradient(circle at 50% 50%, rgba(255,226,0,.62) 0%, rgba(255,226,0,0) 62%)"></div><div id="glow6" class="glow" style="background:radial-gradient(circle at 50% 50%, rgba(182,255,0,.62) 0%, rgba(182,255,0,0) 62%)"></div><div id="glow7" class="glow" style="background:radial-gradient(circle at 50% 50%, rgba(255,60,150,.62) 0%, rgba(255,60,150,0) 62%)"></div></div>
+<div id="vignette"></div>
+<div id="s0" data-composition-id="s0" data-composition-src="compositions/s0.html" data-start="0.000" data-duration="4.760" data-track-index="1" data-track-kind="graphics" data-width="1080" data-height="1920"></div>
+<div id="s1" data-composition-id="s1" data-composition-src="compositions/s1.html" data-start="4.760" data-duration="6.675" data-track-index="1" data-track-kind="graphics" data-width="1080" data-height="1920"></div>
+<div id="s2" data-composition-id="s2" data-composition-src="compositions/s2.html" data-start="11.434" data-duration="4.881" data-track-index="1" data-track-kind="graphics" data-width="1080" data-height="1920"></div>
+<div id="s3" data-composition-id="s3" data-composition-src="compositions/s3.html" data-start="16.316" data-duration="5.227" data-track-index="1" data-track-kind="graphics" data-width="1080" data-height="1920"></div>
+<div id="s4" data-composition-id="s4" data-composition-src="compositions/s4.html" data-start="21.543" data-duration="4.339" data-track-index="1" data-track-kind="graphics" data-width="1080" data-height="1920"></div>
+<div id="s5" data-composition-id="s5" data-composition-src="compositions/s5.html" data-start="25.882" data-duration="3.862" data-track-index="1" data-track-kind="graphics" data-width="1080" data-height="1920"></div>
+<div id="s6" data-composition-id="s6" data-composition-src="compositions/s6.html" data-start="29.744" data-duration="4.908" data-track-index="1" data-track-kind="graphics" data-width="1080" data-height="1920"></div>
+<div id="s7" data-composition-id="s7" data-composition-src="compositions/s7.html" data-start="34.652" data-duration="4.051" data-track-index="1" data-track-kind="graphics" data-width="1080" data-height="1920"></div>
+<div id="captions" data-composition-id="captions" data-composition-src="compositions/captions.html" data-start="0" data-duration="38.703" data-track-index="2" data-track-kind="captions" data-width="1080" data-height="1920"></div>
+<audio id="voice" src="assets/voice.wav" data-start="0" data-duration="38.703" data-track-index="10" data-volume="1"></audio>
+<audio id="music" src="assets/music.wav" data-start="0" data-duration="38.703" data-track-index="11" data-volume="1"></audio>
+<audio id="sfx" src="assets/sfx.wav" data-start="0" data-duration="38.703" data-track-index="12" data-volume="1"></audio>
+</div>
+<script>
+window.__timelines = window.__timelines || {};
+const tl = gsap.timeline({ paused: true });
+tl.to("#stripes", { x: -1548, duration: 38.703, ease: "none" }, 0);
+tl.set("#glow0", { opacity: 1 }, 0);
+tl.to("#glow0", { opacity: 0, duration: .4, ease: "power2.inOut" }, 4.660);
+tl.fromTo("#glow1", { opacity: 0 }, { opacity: 1, duration: .4, ease: "power2.inOut" }, 4.660);
+tl.to("#glow1", { opacity: 0, duration: .4, ease: "power2.inOut" }, 11.334);
+tl.fromTo("#glow2", { opacity: 0 }, { opacity: 1, duration: .4, ease: "power2.inOut" }, 11.334);
+tl.to("#glow2", { opacity: 0, duration: .4, ease: "power2.inOut" }, 16.216);
+tl.fromTo("#glow3", { opacity: 0 }, { opacity: 1, duration: .4, ease: "power2.inOut" }, 16.216);
+tl.to("#glow3", { opacity: 0, duration: .4, ease: "power2.inOut" }, 21.443);
+tl.fromTo("#glow4", { opacity: 0 }, { opacity: 1, duration: .4, ease: "power2.inOut" }, 21.443);
+tl.to("#glow4", { opacity: 0, duration: .4, ease: "power2.inOut" }, 25.782);
+tl.fromTo("#glow5", { opacity: 0 }, { opacity: 1, duration: .4, ease: "power2.inOut" }, 25.782);
+tl.to("#glow5", { opacity: 0, duration: .4, ease: "power2.inOut" }, 29.644);
+tl.fromTo("#glow6", { opacity: 0 }, { opacity: 1, duration: .4, ease: "power2.inOut" }, 29.644);
+tl.to("#glow6", { opacity: 0, duration: .4, ease: "power2.inOut" }, 34.552);
+tl.fromTo("#glow7", { opacity: 0 }, { opacity: 1, duration: .4, ease: "power2.inOut" }, 34.552);
+tl.fromTo("#glowwrap", { scale: 1.05 }, { scale: 1, duration: .4, ease: "power2.out" }, 0.000);
+tl.fromTo("#glowwrap", { scale: 1.05 }, { scale: 1, duration: .4, ease: "power2.out", immediateRender: false }, 0.500);
+tl.fromTo("#glowwrap", { scale: 1.05 }, { scale: 1, duration: .4, ease: "power2.out", immediateRender: false }, 1.000);
+tl.fromTo("#glowwrap", { scale: 1.05 }, { scale: 1, duration: .4, ease: "power2.out", immediateRender: false }, 1.500);
+tl.fromTo("#glowwrap", { scale: 1.05 }, { scale: 1, duration: .4, ease: "power2.out", immediateRender: false }, 2.000);
+tl.fromTo("#glowwrap", { scale: 1.05 }, { scale: 1, duration: .4, ease: "power2.out", immediateRender: false }, 2.500);
+tl.fromTo("#glowwrap", { scale: 1.05 }, { scale: 1, duration: .4, ease: "power2.out", immediateRender: false }, 3.000);
+tl.fromTo("#glowwrap", { scale: 1.05 }, { scale: 1, duration: .4, ease: "power2.out", immediateRender: false }, 3.500);
+tl.fromTo("#glowwrap", { scale: 1.05 }, { scale: 1, duration: .4, ease: "power2.out", immediateRender: false }, 4.000);
+tl.fromTo("#glowwrap", { scale: 1.05 }, { scale: 1, duration: .4, ease: "power2.out", immediateRender: false }, 4.500);
+tl.fromTo("#glowwrap", { scale: 1.05 }, { scale: 1, duration: .4, ease: "power2.out", immediateRender: false }, 5.000);
+tl.fromTo("#glowwrap", { scale: 1.05 }, { scale: 1, duration: .4, ease: "power2.out", immediateRender: false }, 5.500);
+tl.fromTo("#glowwrap", { scale: 1.05 }, { scale: 1, duration: .4, ease: "power2.out", immediateRender: false }, 6.000);
+tl.fromTo("#glowwrap", { scale: 1.05 }, { scale: 1, duration: .4, ease: "power2.out", immediateRender: false }, 6.500);
+tl.fromTo("#glowwrap", { scale: 1.05 }, { scale: 1, duration: .4, ease: "power2.out", immediateRender: false }, 7.000);
+tl.fromTo("#glowwrap", { scale: 1.05 }, { scale: 1, duration: .4, ease: "power2.out", immediateRender: false }, 7.500);
+tl.fromTo("#glowwrap", { scale: 1.05 }, { scale: 1, duration: .4, ease: "power2.out", immediateRender: false }, 8.000);
+tl.fromTo("#glowwrap", { scale: 1.05 }, { scale: 1, duration: .4, ease: "power2.out", immediateRender: false }, 8.500);
+tl.fromTo("#glowwrap", { scale: 1.05 }, { scale: 1, duration: .4, ease: "power2.out", immediateRender: false }, 9.000);
+tl.fromTo("#glowwrap", { scale: 1.05 }, { scale: 1, duration: .4, ease: "power2.out", immediateRender: false }, 9.500);
+tl.fromTo("#glowwrap", { scale: 1.05 }, { scale: 1, duration: .4, ease: "power2.out", immediateRender: false }, 10.000);
+tl.fromTo("#glowwrap", { scale: 1.05 }, { scale: 1, duration: .4, ease: "power2.out", immediateRender: false }, 10.500);
+tl.fromTo("#glowwrap", { scale: 1.05 }, { scale: 1, duration: .4, ease: "power2.out", immediateRender: false }, 11.000);
+tl.fromTo("#glowwrap", { scale: 1.05 }, { scale: 1, duration: .4, ease: "power2.out", immediateRender: false }, 11.500);
+tl.fromTo("#glowwrap", { scale: 1.05 }, { scale: 1, duration: .4, ease: "power2.out", immediateRender: false }, 12.000);
+tl.fromTo("#glowwrap", { scale: 1.05 }, { scale: 1, duration: .4, ease: "power2.out", immediateRender: false }, 12.500);
+tl.fromTo("#glowwrap", { scale: 1.05 }, { scale: 1, duration: .4, ease: "power2.out", immediateRender: false }, 13.000);
+tl.fromTo("#glowwrap", { scale: 1.05 }, { scale: 1, duration: .4, ease: "power2.out", immediateRender: false }, 13.500);
+tl.fromTo("#glowwrap", { scale: 1.05 }, { scale: 1, duration: .4, ease: "power2.out", immediateRender: false }, 14.000);
+tl.fromTo("#glowwrap", { scale: 1.05 }, { scale: 1, duration: .4, ease: "power2.out", immediateRender: false }, 14.500);
+tl.fromTo("#glowwrap", { scale: 1.05 }, { scale: 1, duration: .4, ease: "power2.out", immediateRender: false }, 15.000);
+tl.fromTo("#glowwrap", { scale: 1.05 }, { scale: 1, duration: .4, ease: "power2.out", immediateRender: false }, 15.500);
+tl.fromTo("#glowwrap", { scale: 1.05 }, { scale: 1, duration: .4, ease: "power2.out", immediateRender: false }, 16.000);
+tl.fromTo("#glowwrap", { scale: 1.05 }, { scale: 1, duration: .4, ease: "power2.out", immediateRender: false }, 16.500);
+tl.fromTo("#glowwrap", { scale: 1.05 }, { scale: 1, duration: .4, ease: "power2.out", immediateRender: false }, 17.000);
+tl.fromTo("#glowwrap", { scale: 1.05 }, { scale: 1, duration: .4, ease: "power2.out", immediateRender: false }, 17.500);
+tl.fromTo("#glowwrap", { scale: 1.05 }, { scale: 1, duration: .4, ease: "power2.out", immediateRender: false }, 18.000);
+tl.fromTo("#glowwrap", { scale: 1.05 }, { scale: 1, duration: .4, ease: "power2.out", immediateRender: false }, 18.500);
+tl.fromTo("#glowwrap", { scale: 1.05 }, { scale: 1, duration: .4, ease: "power2.out", immediateRender: false }, 19.000);
+tl.fromTo("#glowwrap", { scale: 1.05 }, { scale: 1, duration: .4, ease: "power2.out", immediateRender: false }, 19.500);
+tl.fromTo("#glowwrap", { scale: 1.05 }, { scale: 1, duration: .4, ease: "power2.out", immediateRender: false }, 20.000);
+tl.fromTo("#glowwrap", { scale: 1.05 }, { scale: 1, duration: .4, ease: "power2.out", immediateRender: false }, 20.500);
+tl.fromTo("#glowwrap", { scale: 1.05 }, { scale: 1, duration: .4, ease: "power2.out", immediateRender: false }, 21.000);
+tl.fromTo("#glowwrap", { scale: 1.05 }, { scale: 1, duration: .4, ease: "power2.out", immediateRender: false }, 21.500);
+tl.fromTo("#glowwrap", { scale: 1.05 }, { scale: 1, duration: .4, ease: "power2.out", immediateRender: false }, 22.000);
+tl.fromTo("#glowwrap", { scale: 1.05 }, { scale: 1, duration: .4, ease: "power2.out", immediateRender: false }, 22.500);
+tl.fromTo("#glowwrap", { scale: 1.05 }, { scale: 1, duration: .4, ease: "power2.out", immediateRender: false }, 23.000);
+tl.fromTo("#glowwrap", { scale: 1.05 }, { scale: 1, duration: .4, ease: "power2.out", immediateRender: false }, 23.500);
+tl.fromTo("#glowwrap", { scale: 1.05 }, { scale: 1, duration: .4, ease: "power2.out", immediateRender: false }, 24.000);
+tl.fromTo("#glowwrap", { scale: 1.05 }, { scale: 1, duration: .4, ease: "power2.out", immediateRender: false }, 24.500);
+tl.fromTo("#glowwrap", { scale: 1.05 }, { scale: 1, duration: .4, ease: "power2.out", immediateRender: false }, 25.000);
+tl.fromTo("#glowwrap", { scale: 1.05 }, { scale: 1, duration: .4, ease: "power2.out", immediateRender: false }, 25.500);
+tl.fromTo("#glowwrap", { scale: 1.05 }, { scale: 1, duration: .4, ease: "power2.out", immediateRender: false }, 26.000);
+tl.fromTo("#glowwrap", { scale: 1.05 }, { scale: 1, duration: .4, ease: "power2.out", immediateRender: false }, 26.500);
+tl.fromTo("#glowwrap", { scale: 1.05 }, { scale: 1, duration: .4, ease: "power2.out", immediateRender: false }, 27.000);
+tl.fromTo("#glowwrap", { scale: 1.05 }, { scale: 1, duration: .4, ease: "power2.out", immediateRender: false }, 27.500);
+tl.fromTo("#glowwrap", { scale: 1.05 }, { scale: 1, duration: .4, ease: "power2.out", immediateRender: false }, 28.000);
+tl.fromTo("#glowwrap", { scale: 1.05 }, { scale: 1, duration: .4, ease: "power2.out", immediateRender: false }, 28.500);
+tl.fromTo("#glowwrap", { scale: 1.05 }, { scale: 1, duration: .4, ease: "power2.out", immediateRender: false }, 29.000);
+tl.fromTo("#glowwrap", { scale: 1.05 }, { scale: 1, duration: .4, ease: "power2.out", immediateRender: false }, 29.500);
+tl.fromTo("#glowwrap", { scale: 1.05 }, { scale: 1, duration: .4, ease: "power2.out", immediateRender: false }, 30.000);
+tl.fromTo("#glowwrap", { scale: 1.05 }, { scale: 1, duration: .4, ease: "power2.out", immediateRender: false }, 30.500);
+tl.fromTo("#glowwrap", { scale: 1.05 }, { scale: 1, duration: .4, ease: "power2.out", immediateRender: false }, 31.000);
+tl.fromTo("#glowwrap", { scale: 1.05 }, { scale: 1, duration: .4, ease: "power2.out", immediateRender: false }, 31.500);
+tl.fromTo("#glowwrap", { scale: 1.05 }, { scale: 1, duration: .4, ease: "power2.out", immediateRender: false }, 32.000);
+tl.fromTo("#glowwrap", { scale: 1.05 }, { scale: 1, duration: .4, ease: "power2.out", immediateRender: false }, 32.500);
+tl.fromTo("#glowwrap", { scale: 1.05 }, { scale: 1, duration: .4, ease: "power2.out", immediateRender: false }, 33.000);
+tl.fromTo("#glowwrap", { scale: 1.05 }, { scale: 1, duration: .4, ease: "power2.out", immediateRender: false }, 33.500);
+tl.fromTo("#glowwrap", { scale: 1.05 }, { scale: 1, duration: .4, ease: "power2.out", immediateRender: false }, 34.000);
+tl.fromTo("#glowwrap", { scale: 1.05 }, { scale: 1, duration: .4, ease: "power2.out", immediateRender: false }, 34.500);
+tl.fromTo("#glowwrap", { scale: 1.05 }, { scale: 1, duration: .4, ease: "power2.out", immediateRender: false }, 35.000);
+tl.fromTo("#glowwrap", { scale: 1.05 }, { scale: 1, duration: .4, ease: "power2.out", immediateRender: false }, 35.500);
+tl.fromTo("#glowwrap", { scale: 1.05 }, { scale: 1, duration: .4, ease: "power2.out", immediateRender: false }, 36.000);
+tl.fromTo("#glowwrap", { scale: 1.05 }, { scale: 1, duration: .4, ease: "power2.out", immediateRender: false }, 36.500);
+tl.fromTo("#glowwrap", { scale: 1.05 }, { scale: 1, duration: .4, ease: "power2.out", immediateRender: false }, 37.000);
+tl.fromTo("#glowwrap", { scale: 1.05 }, { scale: 1, duration: .4, ease: "power2.out", immediateRender: false }, 37.500);
+tl.fromTo("#glowwrap", { scale: 1.05 }, { scale: 1, duration: .4, ease: "power2.out", immediateRender: false }, 38.000);
+tl.fromTo("#glowwrap", { scale: 1.05 }, { scale: 1, duration: .4, ease: "power2.out", immediateRender: false }, 38.500);
+window.__timelines["main"] = tl;
+tl.seek(0);
+</script>
+</body>
+</html>

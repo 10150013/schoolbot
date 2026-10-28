@@ -1,0 +1,48 @@
+<template>
+<style>
+#root { position: absolute; inset: 0; font-family: 'Archivo Black', 'Inter', sans-serif; }
+.badge { position: absolute; left: 0; width: 1080px; top: 176px; text-align: center; }
+.badge span { display: inline-block; padding: 8px 32px; border-radius: 40px; background: #00ebff; color: #0f0820; font: 800 30px 'Inter', sans-serif; letter-spacing: .05em; }
+.bar { position: absolute; left: 236px; top: 246px; width: 608px; height: 10px; display: flex; gap: 6px; }
+.bar i { flex: 1; border-radius: 5px; background: #5a5082; overflow: hidden; position: relative; display: block; }
+.bar b { position: absolute; left: 0; top: 0; bottom: 0; width: 100%; background: #00ebff; display: block; }
+.title { position: absolute; left: 0; width: 1080px; top: 278px; text-align: center; line-height: 1.04; }
+.title .l { display: block; font-size: 84px; color: #fff; paint-order: stroke fill; -webkit-text-stroke: 10px #0c061c; letter-spacing: .01em; }
+.title .l2 { color: #00ebff; }
+.title .w { display: inline-block; margin: 0 .15em; }
+.vis { position: absolute; left: 94px; top: 455px; width: 891px; height: 660px; }
+.vis svg { width: 891px; height: 660px; overflow: hidden; display: block; }
+.lbl { position: absolute; left: 0; width: 1080px; top: 468px; text-align: center; }
+.lbl span { display: inline-block; padding: 8px 30px; border-radius: 34px; background: #fff; color: #0f0820; font: 800 36px 'Inter', sans-serif; }
+.stk { position: absolute; left: 0; width: 1080px; top: 1092px; text-align: center; }
+.stk span { display: inline-block; padding: 12px 34px; border-radius: 28px; background: #ffe200; border: 6px solid #fff; color: #0f0820; font: 900 40px 'Inter', sans-serif; }
+.cta-btn { position: absolute; left: 190px; top: 490px; width: 700px; height: 150px; border-radius: 75px; background: #fe2c55; border: 8px solid #fff; color: #fff; font-size: 84px; line-height: 134px; text-align: center; }
+.cta-save { position: absolute; left: 0; width: 1080px; top: 676px; text-align: center; font-size: 50px; color: #fff; paint-order: stroke fill; -webkit-text-stroke: 8px #0c061c; }
+.cta-next { position: absolute; left: 0; width: 1080px; top: 745px; text-align: center; }
+.cta-next span { display: inline-block; padding: 10px 34px; border-radius: 40px; background: #ffe200; color: #0f0820; font: 800 40px 'Inter', sans-serif; }
+.cta-em { position: absolute; top: 985px; font-size: 90px; line-height: 1; color: #fff; }
+.cta-disc { position: absolute; left: 0; width: 1080px; top: 1105px; text-align: center; font: 800 30px/1.3 'Inter', sans-serif; color: #fff; }
+</style>
+<div id="root" data-composition-id="s1" data-width="1080" data-height="1920">
+<div id="s1-content" class="clip" data-start="0" data-duration="2.328"><div id="s1-badge" class="badge"><span>STEP 1 / 5</span></div><div class="bar"><i><b id="s1-seg0" style="width:100%"></b></i><i><b id="s1-seg1" style="width:0%"></b></i><i><b id="s1-seg2" style="width:0%"></b></i><i><b id="s1-seg3" style="width:0%"></b></i><i><b id="s1-seg4" style="width:0%"></b></i></div><div id="s1-title" class="title"><span class="l l1"><span class="w">OPEN</span><span class="w">THE</span></span><span class="l l2"><span class="w">GLOVE</span><span class="w">BOX</span></span></div><div id="s1-vis" class="vis" data-layout-allow-overflow><svg viewBox="0 50 1080 800" xmlns="http://www.w3.org/2000/svg"><rect x="60.0" y="100.0" width="960.0" height="560.0" rx="50" fill="#302c48" stroke="#605a82" stroke-width="4"/><rect x="120.0" y="135.0" width="320.0" height="50.0" rx="14" fill="#1e1c30"/><rect x="640.0" y="135.0" width="320.0" height="50.0" rx="14" fill="#1e1c30"/><rect x="180.0" y="240.0" width="720.0" height="300.0" rx="24" fill="#0e0e14"/><g id="s1-in" opacity="0"><rect x="330.0" y="290.0" width="420.0" height="140.0" rx="10" fill="#222634" stroke="#6e7486" stroke-width="3"/><rect x="330.0" y="435.0" width="420.0" height="45.0" rx="8" fill="#606678" stroke="#6e7486" stroke-width="3"/></g><rect x="180.0" y="240.0" width="720.0" height="300.0" rx="24" fill="#565c70" stroke="#82889c" stroke-width="4" id="s1-door"/><rect x="470.0" y="280.0" width="140.0" height="22.0" rx="10" fill="#3c4050" id="s1-handle"/><g id="s1-it0"><rect x="320.0" y="389.0" width="120" height="22" transform="rotate(29 380 400)" fill="#ffe200"/></g><g id="s1-it1"><rect x="480.0" y="389.0" width="120" height="22" transform="rotate(-23 540 400)" fill="#ff3c96"/></g><g id="s1-it2"><rect x="640.0" y="389.0" width="120" height="22" transform="rotate(57 700 400)" fill="#00ebff"/></g></svg></div><div id="s1-lbl0" class="lbl"><span>EMPTY IT FIRST</span></div></div>
+</div>
+<script>
+const tl = gsap.timeline({ paused: true });
+tl.fromTo("#s1-content", { opacity: 0, filter: "blur(8px)" }, { opacity: 1, filter: "blur(0px)", duration: .18, ease: "power2.out" }, 0);
+tl.to("#s1-content", { opacity: 0, filter: "blur(8px)", duration: .15, ease: "power2.in" }, 2.178);
+tl.fromTo("#s1-title", { opacity: 0, filter: "blur(8px)" }, { opacity: 1, filter: "blur(0px)", duration: .2, ease: "power2.out" }, .1);
+tl.fromTo("#s1-badge", { opacity: 0 }, { opacity: 1, duration: .12 }, 0);
+tl.fromTo("#s1-vis", { x: -160, scale: .92, opacity: 0, filter: "blur(10px)" }, { x: 0, scale: 1, opacity: 1, filter: "blur(0px)", duration: .42, ease: "expo.out" }, .08);
+tl.fromTo("#s1-seg0", { scaleX: 0, transformOrigin: "0% 50%" }, { scaleX: 1, transformOrigin: "0% 50%", duration: 2.328, ease: "none" }, 0);
+tl.fromTo("#s1-lbl0", { opacity: 0, y: 12 }, { opacity: 1, y: 0, duration: .22, ease: "power3.out" }, 0.116);
+tl.fromTo("#s1-door", {"attr": {"y": 240, "height": 300}}, {"attr": {"y": 352.0, "height": 240.5}, "duration": 0.9312, "ease": "power2.inOut"}, 0.466);
+tl.fromTo("#s1-in", {"opacity": 0}, {"opacity": 1, "duration": 0.2, "ease": "none"}, 0.698);
+tl.fromTo("#s1-it0", {"opacity": 0}, {"opacity": 1, "duration": 0.05}, 0.815);
+tl.to("#s1-it0", {"y": 440, "duration": 1.164, "ease": "power2.in"}, 0.815);
+tl.fromTo("#s1-it1", {"opacity": 0}, {"opacity": 1, "duration": 0.05}, 0.895);
+tl.to("#s1-it1", {"y": 440, "duration": 1.164, "ease": "power2.in"}, 0.895);
+tl.fromTo("#s1-it2", {"opacity": 0}, {"opacity": 1, "duration": 0.05}, 0.975);
+tl.to("#s1-it2", {"y": 440, "duration": 1.164, "ease": "power2.in"}, 0.975);
+window.__timelines["s1"] = tl;
+</script>
+</template>

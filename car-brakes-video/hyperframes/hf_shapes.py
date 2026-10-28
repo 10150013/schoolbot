@@ -35,7 +35,7 @@ def text(x, y, s, size, fill, stroke=None, sw=None, font="Archivo Black", weight
             f'text-anchor="middle" dominant-baseline="central">{s}</text>')
 
 def emoji(x, y, ch, size, **kw):
-    return f'<text x="{x}" y="{y}" font-size="{size}" text-anchor="middle" dominant-baseline="central" {A(**kw)}>{ch}</text>'
+    return f'<text x="{x}" y="{y}" font-size="{size}" text-anchor="middle" dominant-baseline="central" {A(color="#fff", **kw)}>{ch}</text>'
 
 def g(inner, **kw):
     return f"<g {A(**kw)}>{inner}</g>"

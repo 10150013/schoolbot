@@ -7,6 +7,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, os.path.join(HERE, "..", "tiktok")); sys.path.insert(0, HERE)
 import engine, soundfile as sf
 from hf_vis_brakes import VIS, Tw
+import hf_vis_more  # registers the remaining scene visuals
 
 W, H = 1080, 1920
 BAND_TOP = 168
@@ -14,6 +15,11 @@ BEAT = 0.5
 
 def rgb(c): return "%d,%d,%d" % tuple(c[:3])
 def hexc(c): return "#%02x%02x%02x" % tuple(c[:3])
+
+def tiktok_scenes(name):
+    """Script (titles, narration, stickers) of an episode, shared with the first cut."""
+    spec = importlib.util.spec_from_file_location("tt_" + name, os.path.join(HERE, "..", "tiktok", "episodes", name + ".py"))
+    m = importlib.util.module_from_spec(spec); spec.loader.exec_module(m); return m.SCENES
 
 def load_episode(path):
     spec = importlib.util.spec_from_file_location("ep", path); m = importlib.util.module_from_spec(spec); sys.modules["ep"] = m
@@ -38,10 +44,10 @@ SCENE_CSS = """
 .stk span { display: inline-block; padding: 12px 34px; border-radius: 28px; background: #ffe200; border: 6px solid #fff; color: #0f0820; font: 900 40px 'Inter', sans-serif; }
 .cta-btn { position: absolute; left: 190px; top: 490px; width: 700px; height: 150px; border-radius: 75px; background: #fe2c55; border: 8px solid #fff; color: #fff; font-size: 84px; line-height: 134px; text-align: center; }
 .cta-save { position: absolute; left: 0; width: 1080px; top: 676px; text-align: center; font-size: 50px; color: #fff; paint-order: stroke fill; -webkit-text-stroke: 8px #0c061c; }
-.cta-next { position: absolute; left: 0; width: 1080px; top: 760px; text-align: center; }
+.cta-next { position: absolute; left: 0; width: 1080px; top: 745px; text-align: center; }
 .cta-next span { display: inline-block; padding: 10px 34px; border-radius: 40px; background: #ffe200; color: #0f0820; font: 800 40px 'Inter', sans-serif; }
-.cta-em { position: absolute; top: 960px; font-size: 90px; line-height: 1; color: #fff; }
-.cta-disc { position: absolute; left: 0; width: 1080px; top: 1040px; text-align: center; font: 800 30px/1.3 'Inter', sans-serif; color: #fff; }
+.cta-em { position: absolute; top: 985px; font-size: 90px; line-height: 1; color: #fff; }
+.cta-disc { position: absolute; left: 0; width: 1080px; top: 1105px; text-align: center; font: 800 30px/1.3 'Inter', sans-serif; color: #fff; }
 """
 
 def build_scene(i, sc, vis_name, n_scenes, total_steps, vis_kw):
@@ -62,7 +68,7 @@ def build_scene(i, sc, vis_name, n_scenes, total_steps, vis_kw):
     stk = ""
     if "sticker" in sc:
         t, e, si = sc["sticker"]; stk = f'<div id="{P}stk" class="stk"><span>{e} {t}</span></div>'
-    svg = f'<div id="{P}vis" class="vis"><svg viewBox="0 50 1080 800" xmlns="http://www.w3.org/2000/svg">{v["svg"]}</svg></div>' if v["svg"] else ""
+    svg = f'<div id="{P}vis" class="vis" data-layout-allow-overflow><svg viewBox="0 50 1080 800" xmlns="http://www.w3.org/2000/svg">{v["svg"]}</svg></div>' if v["svg"] else ""
     content = f'<div id="{P}content" class="clip" data-start="0" data-duration="{D}">{badge}{bar}{title}{svg}{v.get("html", "")}{labels}{stk}</div>'
     js = [f"const tl = gsap.timeline({{ paused: true }});"]
     # scene entry / exit: blur swap on one stage
@@ -161,9 +167,9 @@ def build(ep, outdir, vis_names):
     T = round(total, 3)
     hosts, glows, tl_js = [], [], []
     for i, sc in enumerate(TL):
-        kw = {}
-        if vis_names[i] == "cta": kw = dict(nxt=getattr(ep, "NEXT", None))
-        html = build_scene(i, sc, vis_names[i], n, total_steps, kw)
+        entry = vis_names[i]; name, kw = (entry if isinstance(entry, tuple) else (entry, {})); kw = dict(kw)
+        if name == "cta": kw = dict(nxt=getattr(ep, "NEXT", None))
+        html = build_scene(i, sc, name, n, total_steps, kw)
         open(os.path.join(outdir, "compositions", f"s{i}.html"), "w").write(html)
         hosts.append(f'<div id="s{i}" data-composition-id="s{i}" data-composition-src="compositions/s{i}.html" data-start="{sc["start"]:.3f}" data-duration="{sc["dur"]:.3f}" data-track-index="1" data-track-kind="graphics" data-width="{W}" data-height="{H}"></div>')
         a = rgb(sc["acc"])
@@ -217,6 +223,11 @@ tl.seek(0);
 </html>
 """
     open(os.path.join(outdir, "index.html"), "w").write(index)
+    sc_dir = os.path.join(HERE, "_scaffold")
+    for fn in os.listdir(sc_dir):
+        if not os.path.exists(os.path.join(outdir, fn)): shutil.copy(os.path.join(sc_dir, fn), os.path.join(outdir, fn))
+    mp = os.path.join(outdir, "meta.json")
+    meta = json.load(open(mp)); meta["name"] = ep.NAME; meta["id"] = ep.NAME; json.dump(meta, open(mp, "w"), indent=2)
     print("built", outdir, "T=", T, "scenes", n)
 
 if __name__ == "__main__":

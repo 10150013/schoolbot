@@ -122,7 +122,7 @@ def v_cta(P, D, nxt=None, disclaimer=("ALWAYS USE JACK STANDS", "& CHECK YOUR MA
     for i in range(len(emo)):
         st = .2 + i * .22
         w.fromto(f"#{P}em{i}", {"opacity": 0}, {"keyframes": {"0%": {"opacity": 0}, "15%": {"opacity": 1}, "85%": {"opacity": 1}, "100%": {"opacity": 0}}, "duration": 2.6, "ease": "none"}, st)
-        w.to(f"#{P}em{i}", {"y": -220, "duration": 2.6, "ease": "none"}, st)
+        w.to(f"#{P}em{i}", {"y": -150, "duration": 2.6, "ease": "none"}, st)
     w.fromto(f"#{P}disc", {"opacity": 0}, {"opacity": .85, "duration": .3}, .8)
     return dict(svg="", html="\n".join(html), tw=w, labels=[])
 

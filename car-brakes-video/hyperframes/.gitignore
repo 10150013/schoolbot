@@ -2,3 +2,8 @@
 node_modules/
 ep*/assets/*.wav
 __pycache__/
+out/*.mp4
+out/work-*/
+out/.*hf-transaction*/
+build_*.log
+*.log
