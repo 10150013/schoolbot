@@ -436,7 +436,9 @@ def make_audio(tl, total):
     for sc in tl:
         if sc["i"] > 0: sadd(whoosh, sc["start"] - .12)
         if "sticker" in sc: sadd(pop, sc["sents"][sc["sticker"][2]]["start"])
-    sadd(ding, tl[-1]["sents"][0]["start"] + .9)
+    if not NO_DING: sadd(ding, tl[-1]["sents"][0]["start"] + .9)
+    global STEMS
+    STEMS = dict(music=music, voice=v, sfx=sfx)
     mix = music + np.stack([v, v], 1) + sfx
     mix = np.tanh(mix * 1.15) / np.tanh(1.15)
     mix = mix / np.abs(mix).max() * .89
@@ -514,7 +516,7 @@ def caption_img(words, act, acc):
             x += widths[i] + sp
     return im
 
-TL = None; TITLES = {}; STICKERS = {}; NSTEPS = 1
+TL = None; TITLES = {}; STICKERS = {}; NSTEPS = 1; STEMS = {}; NO_DING = False
 def scene_at(t):
     for sc in TL:
         if t < sc["end"]: return sc
