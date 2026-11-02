@@ -128,7 +128,7 @@ footer { border-top: 3px solid var(--accent); padding-block: 24px 40px; color: v
 
 <script>
 (function () {
-  var MAX_MILES = 25, PREP_MIN = 20, MIN_PER_MILE = 3;
+  var MAX_MILES = 25, PREP_MIN = 10;
   var ORIGIN = [40.036, -75.064]; // ZIP 19149
   // Approximate ZIP centers (lat, lon) so no outside lookup is needed.
   var ZIPS = {19102:[39.952,-75.167],19103:[39.953,-75.174],19104:[39.958,-75.2],19106:[39.949,-75.145],19107:[39.949,-75.158],19111:[40.057,-75.081],19114:[40.083,-74.989],19115:[40.1,-75.044],19116:[40.117,-75.016],19118:[40.075,-75.205],19119:[40.056,-75.19],19120:[40.034,-75.121],19121:[39.981,-75.175],19122:[39.975,-75.146],19123:[39.962,-75.145],19124:[40.019,-75.094],19125:[39.976,-75.125],19126:[40.058,-75.145],19127:[40.027,-75.222],19128:[40.058,-75.213],19129:[40.016,-75.185],19130:[39.968,-75.178],19131:[39.987,-75.227],19132:[39.994,-75.171],19133:[39.995,-75.145],19134:[39.992,-75.11],19135:[40.021,-75.052],19136:[40.037,-75.025],19137:[40.001,-75.071],19138:[40.056,-75.155],19139:[39.962,-75.23],19140:[40.011,-75.146],19141:[40.037,-75.145],19142:[39.921,-75.23],19143:[39.944,-75.227],19144:[40.034,-75.175],19145:[39.919,-75.192],19146:[39.936,-75.181],19147:[39.935,-75.153],19148:[39.917,-75.159],19149:[40.036,-75.064],19150:[40.073,-75.173],19151:[39.977,-75.256],19152:[40.058,-75.047],19153:[39.893,-75.232],19154:[40.087,-74.977]};
@@ -153,28 +153,67 @@ footer { border-top: 3px solid var(--accent); padding-block: 24px 40px; color: v
     $("street").focus({ preventScroll: true });
   };
 
+  function getJSON(url) {
+    return fetch(url, { headers: { "Accept": "application/json" } }).then(function (r) {
+      if (!r.ok) throw new Error("http " + r.status);
+      return r.json();
+    });
+  }
+  // Find the exact address (free OpenStreetMap search), then get real driving distance and time (OSRM).
+  function geocode(street, city, zip) {
+    var base = "https://nominatim.openstreetmap.org/search?format=json&limit=1&countrycodes=us&street=" +
+      encodeURIComponent(street) + "&city=" + encodeURIComponent(city) + "&state=PA";
+    return getJSON(base + "&postalcode=" + zip).then(function (r) {
+      if (r.length) return [parseFloat(r[0].lat), parseFloat(r[0].lon)];
+      return getJSON(base).then(function (r2) { return r2.length ? [parseFloat(r2[0].lat), parseFloat(r2[0].lon)] : null; });
+    });
+  }
+  function drive(to) {
+    var url = "https://router.project-osrm.org/route/v1/driving/" + ORIGIN[1] + "," + ORIGIN[0] + ";" + to[1] + "," + to[0] + "?overview=false";
+    return getJSON(url).then(function (d) {
+      var rt = d.routes && d.routes[0];
+      if (!rt) throw new Error("no route");
+      return { mi: rt.distance / 1609.34, min: rt.duration / 60 };
+    });
+  }
+  function estimate(street, city, zip) {
+    return geocode(street, city, zip).then(function (pt) {
+      if (!pt) throw new Error("no match");
+      return drive(pt);
+    }).catch(function () {
+      // Fallback when the lookup services are unreachable: rough ZIP-center estimate.
+      var pt = locate(zip);
+      if (!pt) return null;
+      var mi = miles(ORIGIN, pt);
+      return { mi: mi, min: mi * 2.5 };
+    });
+  }
+
   $("form").onsubmit = function (e) {
     e.preventDefault();
-    var res = $("result"), zip = $("zip").value.trim();
+    var res = $("result"), btn = $("checkBtn");
+    var street = $("street").value.trim(), city = $("city").value.trim(), zip = $("zip").value.trim();
     $("choices").hidden = true; $("done").hidden = true; res.hidden = false;
-    var pt = locate(zip);
-    if (!pt) {
-      res.className = "result no";
-      res.innerHTML = '<div class="tag">Not available</div><div class="eta">No delivery</div><p>We could not match ZIP ' + zip + ' to our delivery area.</p>';
-      return;
-    }
-    var mi = miles(ORIGIN, pt);
-    if (mi > MAX_MILES) {
-      res.className = "result no";
-      res.innerHTML = '<div class="tag">Not available</div><div class="eta">Too far</div><p>About ' + mi.toFixed(1) + ' miles from ZIP 19149. We deliver within ' + MAX_MILES + ' miles.</p>';
-      return;
-    }
-    var mins = Math.round((PREP_MIN + mi * MIN_PER_MILE) / 5) * 5;
-    eta = { mins: mins, at: new Date(Date.now() + mins * 60000) };
-    res.className = "result ok";
-    res.innerHTML = '<div class="tag">Delivery available</div><div class="eta">About ' + mins + ' min</div><p>Arrives around ' + clock(eta.at) + '. Roughly ' + mi.toFixed(1) + ' miles from ZIP 19149.</p>';
-    $("deliveryInfo").textContent = "Arrives in about " + mins + " minutes";
-    $("choices").hidden = false;
+    res.className = "result"; res.innerHTML = "<p>Checking your address...</p>";
+    btn.disabled = true;
+    estimate(street, city, zip).then(function (r) {
+      if (!r) {
+        res.className = "result no";
+        res.innerHTML = '<div class="tag">Not available</div><div class="eta">No delivery</div><p>We could not find that address. Check the street and ZIP and try again.</p>';
+        return;
+      }
+      if (r.mi > MAX_MILES) {
+        res.className = "result no";
+        res.innerHTML = '<div class="tag">Not available</div><div class="eta">Too far</div><p>About ' + r.mi.toFixed(1) + ' miles from ZIP 19149. We deliver within ' + MAX_MILES + ' miles.</p>';
+        return;
+      }
+      var mins = Math.max(5, Math.round((PREP_MIN + r.min) / 5) * 5);
+      eta = { mins: mins, at: new Date(Date.now() + mins * 60000) };
+      res.className = "result ok";
+      res.innerHTML = '<div class="tag">Delivery available</div><div class="eta">About ' + mins + ' min</div><p>Arrives around ' + clock(eta.at) + '. ' + r.mi.toFixed(1) + ' miles by road from ZIP 19149.</p>';
+      $("deliveryInfo").textContent = "Arrives in about " + mins + " minutes";
+      $("choices").hidden = false;
+    }).then(function () { btn.disabled = false; });
   };
 
   $("confirmBtn").onclick = function () {
