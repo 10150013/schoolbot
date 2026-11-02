@@ -253,7 +253,7 @@ footer { border-top: 3px solid var(--accent); padding-block: 24px 40px; color: v
     e.preventDefault();
     var res = $("result"), btn = $("checkBtn");
     var street = $("street").value.trim(), city = $("city").value.trim(), zip = $("zip").value.trim();
-    $("choices").hidden = true; $("done").hidden = true; res.hidden = false;
+    $("choices").hidden = true; $("send").hidden = true; res.hidden = false;
     res.className = "result"; res.innerHTML = "<p>Checking your address...</p>";
     btn.disabled = true;
     estimate(street, city, zip).then(function (r) {
