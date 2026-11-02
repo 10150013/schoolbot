@@ -3,150 +3,184 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Schoolbot – Order &amp; Delivery</title>
+<title>Schoolbot Delivery</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Barlow:wght@400;500;600&family=Barlow+Condensed:wght@600;700&display=swap">
 <style>
-  :root { --bg:#fafafa; --fg:#1a1a1a; --card:#fff; --accent:#2563eb; --ok:#15803d; --bad:#b91c1c; --muted:#6b7280; --line:#e5e7eb; }
-  @media (prefers-color-scheme: dark) {
-    :root { --bg:#111418; --fg:#f3f4f6; --card:#1b2027; --accent:#60a5fa; --ok:#4ade80; --bad:#f87171; --muted:#9ca3af; --line:#2d3540; }
-  }
-  * { box-sizing:border-box; }
-  body { margin:0; font:16px/1.5 system-ui,sans-serif; background:var(--bg); color:var(--fg); }
-  .banner { background:var(--accent); color:#fff; text-align:center; padding:12px 16px; font-weight:600; }
-  header.hero { min-height:70vh; display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center; padding:32px 16px; }
-  header.hero h1 { font-size:2.4rem; margin:0 0 8px; }
-  header.hero p { color:var(--muted); max-width:34rem; margin:0; }
-  .scroll { margin-top:28px; color:var(--muted); font-size:.9rem; }
-  main { max-width:560px; margin:0 auto; padding:16px; }
-  .card { background:var(--card); border:1px solid var(--line); border-radius:14px; padding:20px; margin-bottom:20px; }
-  .item { display:flex; justify-content:space-between; align-items:center; gap:12px; }
-  .item h2 { margin:0; font-size:1.2rem; }
-  .price { font-size:1.6rem; font-weight:700; }
-  button { font:inherit; font-weight:600; background:var(--accent); color:#fff; border:0; border-radius:10px; padding:12px 18px; cursor:pointer; }
-  button:disabled { opacity:.6; cursor:wait; }
-  label { display:block; font-weight:600; margin:12px 0 4px; }
-  input[type=text] { width:100%; font:inherit; padding:10px 12px; border:1px solid var(--line); border-radius:8px; background:var(--bg); color:var(--fg); }
-  .row { display:flex; gap:10px; } .row > * { flex:1; }
-  .hidden { display:none; }
-  .result { margin-top:16px; padding:14px; border-radius:10px; border:1px solid var(--line); }
-  .ok { color:var(--ok); } .bad { color:var(--bad); }
-  .opt { display:flex; gap:10px; align-items:center; margin-top:12px; padding:12px; border:1px solid var(--line); border-radius:10px; }
-  .opt input { width:auto; }
-  small { color:var(--muted); }
+/* Layout: poster-style single column. Black ground, off-white headlines, one yellow accent. */
+:root {
+  --bg: #121212;
+  --panel: #1b1b1b;
+  --line: #3a3a3a;
+  --fg: #f1efe8;
+  --muted: #a8a59b;
+  --accent: #ffc21a;
+  --bad: #ff6b5a;
+  --display: "Anton", "Impact", "Arial Narrow", sans-serif;
+  --label: "Barlow Condensed", "Arial Narrow", sans-serif;
+  --body: "Barlow", system-ui, sans-serif;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--fg); font: 400 17px/1.5 var(--body);
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 0; }
+.wrap { max-width: 880px; margin: 0 auto; }
+.topbar { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding-block: 18px; border-bottom: 3px solid var(--accent); }
+.brand, .eyebrow, .tag, label, .meta { font-family: var(--label); text-transform: uppercase; letter-spacing: .12em; font-weight: 700; }
+.brand { font-size: 1.05rem; }
+.pill { background: var(--accent); color: #111; font: 700 .95rem var(--label); letter-spacing: .1em; text-transform: uppercase; padding: 10px 16px; }
+.hero { padding-block: 56px 48px; }
+.eyebrow { color: var(--accent); font-size: .95rem; margin: 0 0 12px; }
+h1, h2 { font-family: var(--display); font-weight: 400; text-transform: uppercase; line-height: .95; margin: 0; text-wrap: balance; }
+h1 { font-size: clamp(3.2rem, 13vw, 7rem); }
+h1 span { color: var(--accent); display: block; }
+.lede { color: var(--fg); max-width: 30rem; margin: 22px 0 0; font-size: 1.15rem; }
+.zipbox { margin-top: 28px; border: 2px solid var(--accent); padding: 16px 20px; display: flex; justify-content: space-between; align-items: center; gap: 16px; flex-wrap: wrap; }
+.zipbox .meta { color: var(--muted); font-size: .85rem; }
+.zipbox .big { font: 400 2.6rem/1 var(--display); color: var(--accent); }
+section { border-top: 1px solid var(--line); padding-block: 48px; }
+h2 { font-size: clamp(2.2rem, 8vw, 3.6rem); margin-top: 8px; }
+.item { margin-top: 28px; display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+.photo { aspect-ratio: 4/3; background: var(--panel); border: 2px dashed var(--line); display: grid; place-items: center; color: var(--muted); font: 600 1rem var(--label); letter-spacing: .12em; text-transform: uppercase; max-width: 100%; }
+.info { min-width: 0; display: flex; flex-direction: column; justify-content: space-between; gap: 18px; }
+.name { min-height: 2.4rem; border-bottom: 1px solid var(--line); color: var(--muted); font: 400 1.6rem/1.2 var(--display); text-transform: uppercase; }
+.price { font: 400 4.6rem/1 var(--display); color: var(--accent); }
+button { font: 700 1.05rem var(--label); letter-spacing: .12em; text-transform: uppercase; background: var(--accent); color: #111; border: 0; padding: 16px 22px; cursor: pointer; width: 100%; }
+button:hover { filter: brightness(1.08); }
+button:focus-visible, input:focus-visible { outline: 3px solid var(--fg); outline-offset: 2px; }
+button:disabled { opacity: .6; cursor: wait; }
+form { margin-top: 28px; display: grid; gap: 16px; }
+.row { display: grid; grid-template-columns: 2fr 1fr; gap: 16px; }
+.field { display: grid; gap: 6px; min-width: 0; }
+label { font-size: .9rem; color: var(--muted); }
+input { font: 500 1.1rem var(--body); background: var(--panel); color: var(--fg); border: 2px solid var(--line); padding: 14px; width: 100%; border-radius: 0; }
+input:focus { border-color: var(--accent); }
+.result { margin-top: 24px; border: 2px solid var(--line); padding: 20px; }
+.result.ok { border-color: var(--accent); }
+.result .tag { font-size: .9rem; color: var(--accent); }
+.result.no .tag { color: var(--bad); }
+.eta { font: 400 clamp(2.4rem, 9vw, 3.6rem)/1 var(--display); text-transform: uppercase; margin: 8px 0; }
+.result p { margin: 4px 0; color: var(--muted); }
+.opt { display: flex; align-items: center; gap: 14px; margin-top: 16px; padding: 14px; border: 2px solid var(--accent); }
+.opt input { width: 22px; height: 22px; accent-color: var(--accent); }
+.opt strong { display: block; color: var(--fg); font: 700 1.1rem var(--label); letter-spacing: .1em; text-transform: uppercase; }
+.opt span { color: var(--muted); font-size: .95rem; }
+.done { margin-top: 20px; background: var(--accent); color: #111; padding: 18px; font-weight: 600; }
+footer { border-top: 3px solid var(--accent); padding-block: 24px 40px; color: var(--muted); font-size: .9rem; }
+@media (max-width: 620px) { .item { grid-template-columns: 1fr; } .row { grid-template-columns: 1fr; } }
 </style>
 </head>
 <body>
 
-<div class="banner">🚚 Delivery available — depending on your destination</div>
+<div class="wrap">
+  <div class="topbar">
+    <span class="brand">Schoolbot</span>
+    <span class="pill">Delivery available</span>
+  </div>
 
-<header class="hero">
-  <h1>Schoolbot</h1>
-  <p>Fresh orders delivered from ZIP code 19149. Delivery is available depending on how far you are from us — scroll down to check yours.</p>
-  <div class="scroll">▼ Scroll down to order</div>
-</header>
+  <div class="hero">
+    <p class="eyebrow">Delivery depends on where you are</p>
+    <h1>Order here.<span>We bring it.</span></h1>
+    <p class="lede">Enter your address and we'll tell you if we deliver to you and how long it will take to arrive.</p>
+    <div class="zipbox">
+      <div><div class="meta">We deliver from ZIP</div><div class="big">19149</div></div>
+      <div class="meta">Delivery within 25 miles</div>
+    </div>
+  </div>
 
-<main>
-  <section class="card">
+  <section id="item">
+    <p class="eyebrow">Available now</p>
+    <h2>The item</h2>
     <div class="item">
-      <div>
-        <h2 id="itemName">Featured Item</h2>
-        <small>Ships from ZIP 19149</small>
+      <div class="photo">Item photo</div>
+      <div class="info">
+        <div class="name" id="itemName" aria-label="Item name (blank for now)"></div>
+        <div class="price">$70</div>
+        <button id="orderBtn" type="button">Order here</button>
       </div>
-      <div class="price">$70</div>
     </div>
-    <button id="orderBtn" style="margin-top:16px;width:100%">Order here</button>
   </section>
 
-  <section class="card hidden" id="orderForm">
-    <h2 style="margin-top:0">Where should we deliver?</h2>
+  <section id="orderForm" hidden>
+    <p class="eyebrow">Step 1</p>
+    <h2>Where do we deliver?</h2>
     <form id="form" autocomplete="on">
-      <label for="street">Home address</label>
-      <input id="street" type="text" required placeholder="123 Main St" autocomplete="street-address">
+      <div class="field"><label for="street">Home address</label>
+        <input id="street" required placeholder="123 Main St" autocomplete="street-address"></div>
       <div class="row">
-        <div><label for="city">City</label><input id="city" type="text" required autocomplete="address-level2"></div>
-        <div><label for="zip">ZIP code</label><input id="zip" type="text" required inputmode="numeric" pattern="\d{5}" maxlength="5" autocomplete="postal-code"></div>
+        <div class="field"><label for="city">City</label><input id="city" required autocomplete="address-level2"></div>
+        <div class="field"><label for="zip">ZIP code</label><input id="zip" required inputmode="numeric" pattern="[0-9]{5}" maxlength="5" autocomplete="postal-code"></div>
       </div>
-      <button id="checkBtn" type="submit" style="margin-top:16px;width:100%">Check delivery &amp; arrival time</button>
+      <button id="checkBtn" type="submit">Check delivery and arrival time</button>
     </form>
-
-    <div id="result" class="result hidden"></div>
-    <div id="choices" class="hidden">
-      <label class="opt"><input type="radio" name="method" value="delivery" checked> <span><strong>Delivery</strong><br><small id="deliveryInfo"></small></span></label>
-      <button id="confirmBtn" style="margin-top:16px;width:100%">Place order – $70</button>
+    <div id="result" hidden></div>
+    <div id="choices" hidden>
+      <label class="opt" for="m1"><input type="radio" id="m1" name="method" checked>
+        <div><strong>Delivery</strong><span id="deliveryInfo"></span></div></label>
+      <button id="confirmBtn" type="button" style="margin-top:16px">Place order - $70</button>
     </div>
-    <div id="done" class="result ok hidden"></div>
+    <div id="done" class="done" hidden></div>
   </section>
-</main>
+
+  <footer>Arrival times are estimates measured from ZIP 19149.</footer>
+</div>
 
 <script>
 (function () {
-  var ORIGIN_ZIP = "19149";
-  var MAX_MILES = 25;        // delivery radius
-  var PREP_MIN = 20;         // time to prepare the order
-  var MIN_PER_MILE = 3;      // average driving minutes per mile
+  var MAX_MILES = 25, PREP_MIN = 20, MIN_PER_MILE = 3;
+  var ORIGIN = [40.036, -75.064]; // ZIP 19149
+  // Approximate ZIP centers (lat, lon) so no outside lookup is needed.
+  var ZIPS = {19102:[39.952,-75.167],19103:[39.953,-75.174],19104:[39.958,-75.2],19106:[39.949,-75.145],19107:[39.949,-75.158],19111:[40.057,-75.081],19114:[40.083,-74.989],19115:[40.1,-75.044],19116:[40.117,-75.016],19118:[40.075,-75.205],19119:[40.056,-75.19],19120:[40.034,-75.121],19121:[39.981,-75.175],19122:[39.975,-75.146],19123:[39.962,-75.145],19124:[40.019,-75.094],19125:[39.976,-75.125],19126:[40.058,-75.145],19127:[40.027,-75.222],19128:[40.058,-75.213],19129:[40.016,-75.185],19130:[39.968,-75.178],19131:[39.987,-75.227],19132:[39.994,-75.171],19133:[39.995,-75.145],19134:[39.992,-75.11],19135:[40.021,-75.052],19136:[40.037,-75.025],19137:[40.001,-75.071],19138:[40.056,-75.155],19139:[39.962,-75.23],19140:[40.011,-75.146],19141:[40.037,-75.145],19142:[39.921,-75.23],19143:[39.944,-75.227],19144:[40.034,-75.175],19145:[39.919,-75.192],19146:[39.936,-75.181],19147:[39.935,-75.153],19148:[39.917,-75.159],19149:[40.036,-75.064],19150:[40.073,-75.173],19151:[39.977,-75.256],19152:[40.058,-75.047],19153:[39.893,-75.232],19154:[40.087,-74.977]};
+  var PREFIX = {189:[40.3,-75.15],190:[40.12,-75.3],191:[40.0,-75.15],193:[39.96,-75.6],194:[40.15,-75.35],195:[40.33,-75.93],180:[40.6,-75.45],197:[39.65,-75.65],198:[39.74,-75.55],199:[39.2,-75.5],80:[39.9,-75.05],81:[39.93,-75.1],85:[40.22,-74.76],86:[40.22,-74.76],88:[40.5,-74.5],100:[40.75,-73.99],212:[39.29,-76.61]};
   var $ = function (id) { return document.getElementById(id); };
-  var miles = null, eta = null;
+  var eta = null;
+
+  function locate(zip) {
+    if (ZIPS[zip]) return ZIPS[zip];
+    return PREFIX[zip.slice(0, 3)] || PREFIX[zip.slice(0, 2)] || null;
+  }
+  function miles(a, b) {
+    var r = Math.PI / 180, R = 3958.8, dLa = (b[0]-a[0])*r, dLo = (b[1]-a[1])*r;
+    var h = Math.sin(dLa/2)*Math.sin(dLa/2) + Math.cos(a[0]*r)*Math.cos(b[0]*r)*Math.sin(dLo/2)*Math.sin(dLo/2);
+    return 2 * R * Math.asin(Math.sqrt(h)) * 1.3; // x1.3 approximates road distance
+  }
+  function clock(d) { return d.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" }); }
 
   $("orderBtn").onclick = function () {
-    $("orderForm").classList.remove("hidden");
+    $("orderForm").hidden = false;
     $("orderForm").scrollIntoView({ behavior: "smooth" });
-    $("street").focus();
+    $("street").focus({ preventScroll: true });
   };
-
-  function zipToLatLon(zip) {
-    return fetch("https://api.zippopotam.us/us/" + zip).then(function (r) {
-      if (!r.ok) throw new Error("ZIP not found");
-      return r.json();
-    }).then(function (d) {
-      return { lat: parseFloat(d.places[0].latitude), lon: parseFloat(d.places[0].longitude) };
-    });
-  }
-
-  function haversine(a, b) {
-    var R = 3958.8, rad = Math.PI / 180;
-    var dLat = (b.lat - a.lat) * rad, dLon = (b.lon - a.lon) * rad;
-    var h = Math.sin(dLat / 2) ** 2 + Math.cos(a.lat * rad) * Math.cos(b.lat * rad) * Math.sin(dLon / 2) ** 2;
-    return 2 * R * Math.asin(Math.sqrt(h));
-  }
-
-  function fmtTime(d) { return d.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" }); }
 
   $("form").onsubmit = function (e) {
     e.preventDefault();
-    var zip = $("zip").value.trim();
-    var res = $("result"), btn = $("checkBtn");
-    btn.disabled = true; btn.textContent = "Checking…";
-    $("choices").classList.add("hidden"); $("done").classList.add("hidden");
-    res.classList.remove("hidden");
-    res.textContent = "Calculating distance from " + ORIGIN_ZIP + "…";
-
-    Promise.all([zipToLatLon(ORIGIN_ZIP), zipToLatLon(zip)]).then(function (p) {
-      // Straight-line distance x1.3 approximates road distance.
-      miles = haversine(p[0], p[1]) * 1.3;
-      if (miles > MAX_MILES) {
-        res.innerHTML = '<strong class="bad">Delivery not available</strong><br>You are about ' +
-          miles.toFixed(1) + ' miles from ZIP ' + ORIGIN_ZIP + '. We deliver within ' + MAX_MILES + ' miles.';
-        return;
-      }
-      var mins = Math.round(PREP_MIN + miles * MIN_PER_MILE);
-      var arrive = new Date(Date.now() + mins * 60000);
-      eta = { mins: mins, arrive: arrive };
-      res.innerHTML = '<strong class="ok">Delivery available!</strong><br>About ' + miles.toFixed(1) +
-        ' miles from ZIP ' + ORIGIN_ZIP + '.<br>Estimated arrival: <strong>' + mins + ' min (around ' + fmtTime(arrive) + ')</strong>';
-      $("deliveryInfo").textContent = "Arrives in about " + mins + " min · free delivery";
-      $("choices").classList.remove("hidden");
-    }).catch(function () {
-      res.innerHTML = '<strong class="bad">Could not look up that ZIP code.</strong> Please check it and try again.';
-    }).then(function () {
-      btn.disabled = false; btn.textContent = "Check delivery & arrival time";
-    });
+    var res = $("result"), zip = $("zip").value.trim();
+    $("choices").hidden = true; $("done").hidden = true; res.hidden = false;
+    var pt = locate(zip);
+    if (!pt) {
+      res.className = "result no";
+      res.innerHTML = '<div class="tag">Not available</div><div class="eta">No delivery</div><p>We could not match ZIP ' + zip + ' to our delivery area.</p>';
+      return;
+    }
+    var mi = miles(ORIGIN, pt);
+    if (mi > MAX_MILES) {
+      res.className = "result no";
+      res.innerHTML = '<div class="tag">Not available</div><div class="eta">Too far</div><p>About ' + mi.toFixed(1) + ' miles from ZIP 19149. We deliver within ' + MAX_MILES + ' miles.</p>';
+      return;
+    }
+    var mins = Math.round((PREP_MIN + mi * MIN_PER_MILE) / 5) * 5;
+    eta = { mins: mins, at: new Date(Date.now() + mins * 60000) };
+    res.className = "result ok";
+    res.innerHTML = '<div class="tag">Delivery available</div><div class="eta">About ' + mins + ' min</div><p>Arrives around ' + clock(eta.at) + '. Roughly ' + mi.toFixed(1) + ' miles from ZIP 19149.</p>';
+    $("deliveryInfo").textContent = "Arrives in about " + mins + " minutes";
+    $("choices").hidden = false;
   };
 
   $("confirmBtn").onclick = function () {
-    var done = $("done");
-    done.classList.remove("hidden");
-    done.innerHTML = "✅ Order placed for delivery to " + $("street").value + ", " + $("city").value + " " + $("zip").value +
-      ". Estimated arrival: " + eta.mins + " min (around " + fmtTime(eta.arrive) + "). Total: $70.";
-    $("choices").classList.add("hidden");
+    $("choices").hidden = true;
+    var d = $("done"); d.hidden = false;
+    d.textContent = "Order placed. Delivering to " + $("street").value + ", " + $("city").value + " " + $("zip").value + " in about " + eta.mins + " minutes (around " + clock(eta.at) + "). Total $70.";
   };
 })();
 </script>
