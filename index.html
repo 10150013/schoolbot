@@ -217,9 +217,20 @@ footer { border-top: 3px solid var(--accent); padding-block: 24px 40px; color: v
   };
 
   $("confirmBtn").onclick = function () {
-    $("choices").hidden = true;
-    var d = $("done"); d.hidden = false;
-    d.textContent = "Order placed. Delivering to " + $("street").value + ", " + $("city").value + " " + $("zip").value + " in about " + eta.mins + " minutes (around " + clock(eta.at) + "). Total $70.";
+    var btn = $("confirmBtn"), d = $("done");
+    var order = { street: $("street").value, city: $("city").value, zip: $("zip").value,
+      item: $("itemName").textContent.trim(), eta: eta.mins + " min (around " + clock(eta.at) + ")" };
+    btn.disabled = true; btn.textContent = "Placing order...";
+    fetch("/.netlify/functions/order", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(order) })
+      .then(function (r) { if (!r.ok) throw new Error("fail"); })
+      .then(function () {
+        $("choices").hidden = true; d.hidden = false;
+        d.textContent = "Order placed. Delivering to " + order.street + ", " + order.city + " " + order.zip + " in about " + eta.mins + " minutes (around " + clock(eta.at) + "). Total $70.";
+      })
+      .catch(function () {
+        btn.disabled = false; btn.textContent = "Place order - $70";
+        d.hidden = false; d.textContent = "We could not place your order. Please try again.";
+      });
   };
 })();
 </script>
