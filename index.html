@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Schoolbot Delivery</title>
+<title>Delivery</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Barlow:wght@400;500;600&family=Barlow+Condensed:wght@600;700&display=swap">
@@ -66,6 +66,13 @@ input:focus { border-color: var(--accent); }
 .opt input { width: 22px; height: 22px; accent-color: var(--accent); }
 .opt strong { display: block; color: var(--fg); font: 700 1.1rem var(--label); letter-spacing: .1em; text-transform: uppercase; }
 .opt span { color: var(--muted); font-size: .95rem; }
+.acwrap { position: relative; }
+.sugg { position: absolute; left: 0; right: 0; top: 100%; z-index: 20; margin: 4px 0 0; padding: 0; list-style: none; background: var(--panel); border: 2px solid var(--accent); max-height: 320px; overflow-y: auto; }
+.sugg li { padding: 12px 14px; border-bottom: 1px solid var(--line); cursor: pointer; }
+.sugg li:last-child { border-bottom: 0; }
+.sugg li:hover, .sugg li.on { background: #2a2a2a; }
+.sugg b { display: block; font-weight: 600; color: var(--fg); }
+.sugg span { color: var(--muted); font-size: .92rem; }
 .msg { white-space: pre-wrap; font: 500 1rem/1.5 var(--body); background: var(--panel); border: 2px solid var(--line); padding: 16px; margin: 12px 0; }
 .btn { display: block; text-align: center; text-decoration: none; font: 700 1.05rem var(--label); letter-spacing: .12em; text-transform: uppercase; background: var(--accent); color: #111; padding: 16px 22px; }
 .ghost { background: transparent; color: var(--accent); border: 2px solid var(--accent); margin-top: 12px; }
@@ -110,8 +117,9 @@ footer { border-top: 3px solid var(--accent); padding-block: 24px 40px; color: v
     <p class="eyebrow">Step 1</p>
     <h2>Where do we deliver?</h2>
     <form id="form" autocomplete="on">
-      <div class="field"><label for="street">Home address</label>
-        <input id="street" required placeholder="123 Main St" autocomplete="street-address"></div>
+      <div class="field acwrap"><label for="street">Home address</label>
+        <input id="street" required placeholder="123 Main St" autocomplete="off" role="combobox" aria-expanded="false" aria-controls="sugg">
+        <ul id="sugg" class="sugg" role="listbox" hidden></ul></div>
       <div class="row">
         <div class="field"><label for="city">City</label><input id="city" required autocomplete="address-level2"></div>
         <div class="field"><label for="zip">ZIP code</label><input id="zip" required inputmode="numeric" pattern="[0-9]{5}" maxlength="5" autocomplete="postal-code"></div>
@@ -186,8 +194,50 @@ footer { border-top: 3px solid var(--accent); padding-block: 24px 40px; color: v
       return { mi: rt.distance / 1609.34, min: rt.duration / 60 };
     });
   }
+  // Address suggestions (free Photon/OpenStreetMap search), biased to the Philadelphia area.
+  var picked = null, timer = null, seq = 0;
+  var sugg = $("sugg"), street = $("street");
+  function closeSugg() { sugg.hidden = true; sugg.innerHTML = ""; street.setAttribute("aria-expanded", "false"); }
+  function fmt(p) {
+    var line1 = [p.housenumber, p.street || p.name].filter(Boolean).join(" ");
+    var city = p.city || p.town || p.village || p.district || p.county || "";
+    var st = { Pennsylvania: "PA", "New Jersey": "NJ", Delaware: "DE", Maryland: "MD", "New York": "NY" }[p.state] || p.state || "";
+    return { street: line1, city: city, zip: p.postcode || "", line2: [city, [st, p.postcode].filter(Boolean).join(" ")].filter(Boolean).join(", ") };
+  }
+  function showSugg(list) {
+    sugg.innerHTML = "";
+    list.forEach(function (f) {
+      var a = fmt(f.properties); if (!a.street) return;
+      var li = document.createElement("li"); li.setAttribute("role", "option");
+      li.innerHTML = "<b></b><span></span>"; li.firstChild.textContent = a.street; li.lastChild.textContent = a.line2;
+      li.addEventListener("mousedown", function (e) {
+        e.preventDefault();
+        street.value = a.street; if (a.city) $("city").value = a.city; if (a.zip) $("zip").value = a.zip;
+        picked = { street: a.street, pt: [f.geometry.coordinates[1], f.geometry.coordinates[0]] };
+        closeSugg();
+      });
+      sugg.appendChild(li);
+    });
+    sugg.hidden = !sugg.children.length;
+    street.setAttribute("aria-expanded", String(!sugg.hidden));
+  }
+  street.addEventListener("input", function () {
+    picked = null; clearTimeout(timer);
+    var q = street.value.trim();
+    if (q.length < 3) { closeSugg(); return; }
+    timer = setTimeout(function () {
+      var my = ++seq;
+      getJSON("https://photon.komoot.io/api/?lang=en&limit=8&lat=40.036&lon=-75.064&bbox=-76.6,39.4,-74.3,40.7&q=" + encodeURIComponent(q + " Philadelphia"))
+        .then(function (d) { if (my === seq) showSugg((d.features || []).filter(function (f) { return f.properties.countrycode === "US" && f.properties.housenumber || f.properties.street; })); })
+        .catch(closeSugg);
+    }, 250);
+  });
+  street.addEventListener("blur", function () { setTimeout(closeSugg, 150); });
+  street.addEventListener("keydown", function (e) { if (e.key === "Escape") closeSugg(); });
+
   function estimate(street, city, zip) {
-    return geocode(street, city, zip).then(function (pt) {
+    var known = picked && picked.street === street ? Promise.resolve(picked.pt) : geocode(street, city, zip);
+    return known.then(function (pt) {
       if (!pt) throw new Error("no match");
       return drive(pt);
     }).catch(function () {
