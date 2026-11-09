@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+<meta name="theme-color" content="#1b1d19">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<title>Fusion Gyms Check-In</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<main id="home">
+  <h1>FUSION GYMS</h1>
+  <p class="hint" id="hint">Double-tap anywhere to show your check-in barcode</p>
+  <p class="member" id="memberName"></p>
+  <button id="editBtn" type="button">Set / change member code</button>
+</main>
+
+<section id="overlay" hidden aria-modal="true" role="dialog">
+  <div class="card">
+    <div id="barcode"></div>
+    <div id="codeText"></div>
+  </div>
+  <p class="close">Double-tap to close</p>
+</section>
+
+<dialog id="setup">
+  <form method="dialog" id="setupForm">
+    <label>Name <input id="nameInput" autocomplete="name"></label>
+    <label>Member code <input id="codeInput" required autocapitalize="characters" autocomplete="off" spellcheck="false"></label>
+    <p class="err" id="err"></p>
+    <menu><button value="cancel" type="button" id="cancelBtn">Cancel</button><button type="submit">Save</button></menu>
+  </form>
+</dialog>
+<script type="module" src="app.js"></script>
+</body>
+</html>
