@@ -2,7 +2,7 @@
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html,body{margin:0;height:100%;background:var(--bg);color:var(--fg);font-family:system-ui,-apple-system,Roboto,sans-serif;touch-action:manipulation;user-select:none;-webkit-user-select:none}
 #home{min-height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:24px;text-align:center}
-h1{margin:0;font-style:italic;letter-spacing:.12em;color:var(--accent)}
+h1{margin:0;font-size:2.4rem;font-weight:900;font-style:italic;letter-spacing:.12em;color:var(--accent)}
 .hint{font-size:1.1rem;max-width:18em}
 .member{font-size:1.3rem;color:#fff;margin:0}
 button{font:inherit;padding:12px 18px;border-radius:10px;border:1px solid #555;background:#2a2d27;color:var(--fg)}
