@@ -1,0 +1,1 @@
+{"name":"fusion-wallet-pass","private":true,"type":"module","dependencies":{"passkit-generator":"^3.3.0"}}
