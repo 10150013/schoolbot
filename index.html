@@ -7,15 +7,15 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="icons/icon-192.png">
-<title>Fusion Gyms Check-In</title>
+<title>My Gym Cards</title>
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
 <main id="home">
-  <h1>FUSION GYMS</h1>
-  <p class="hint" id="hint">Double-tap anywhere to show your check-in barcode</p>
-  <p class="member" id="memberName"></p>
-  <button id="editBtn" type="button">Set / change member code</button>
+  <h1>GYM CARDS</h1>
+  <p class="hint" id="hint">Double-tap anywhere to show your selected card</p>
+  <ul id="list"></ul>
+  <button id="addBtn" type="button">+ Add card</button>
 </main>
 
 <section id="overlay" hidden aria-modal="true" role="dialog">
@@ -28,8 +28,23 @@
 
 <dialog id="setup">
   <form method="dialog" id="setupForm">
-    <label>Name <input id="nameInput" autocomplete="name"></label>
-    <label>Member code <input id="codeInput" required autocapitalize="characters" autocomplete="off" spellcheck="false"></label>
+    <label>Card name <input id="nameInput" placeholder="LA Fitness" required></label>
+    <label>Type
+      <select id="typeInput"><option value="image">Photo of QR / barcode</option><option value="code128">Type a code (Code 128)</option></select>
+    </label>
+    <div id="imageBox">
+      <label>Photo <input id="fileInput" type="file" accept="image/*"></label>
+      <canvas id="cropCanvas" hidden></canvas>
+      <div id="sliders" hidden>
+        <label>Left <input type="range" id="cl" min="0" max="45" value="0"></label>
+        <label>Top <input type="range" id="ct" min="0" max="45" value="0"></label>
+        <label>Right <input type="range" id="cr" min="0" max="45" value="0"></label>
+        <label>Bottom <input type="range" id="cb" min="0" max="45" value="0"></label>
+      </div>
+    </div>
+    <div id="codeBox" hidden>
+      <label>Code <input id="codeInput" autocapitalize="characters" autocomplete="off" spellcheck="false"></label>
+    </div>
     <p class="err" id="err"></p>
     <menu><button value="cancel" type="button" id="cancelBtn">Cancel</button><button type="submit">Save</button></menu>
   </form>
