@@ -65,7 +65,8 @@ def chat_loop(channel, on_msg):
                     if ln.startswith("PING"):
                         s.sendall(b"PONG :tmi.twitch.tv\r\n")
                     elif "PRIVMSG" in ln:
-                        on_msg(ln.split("PRIVMSG", 1)[1].split(":", 1)[1])
+                        m = re.match(r"(?:@\S+ )?:(\w+)!", ln)
+                        on_msg(m.group(1) if m else "chat", ln.split("PRIVMSG", 1)[1].split(":", 1)[1])
         except OSError:
             pass
         time.sleep(5)
@@ -92,28 +93,80 @@ def prune(buf_dir, keep=330):
                 f.unlink(missing_ok=True)
 
 
-def make_clip(channel, t, buf_dir, out_dir, before, after, msgs, game, credit):
+def ass_escape(t):
+    return t.replace("\\", "").replace("{", "(").replace("}", ")").replace("\n", " ")
+
+
+def ass_time(t):
+    t = max(0.0, t)
+    return f"{int(t // 3600)}:{int(t % 3600 // 60):02}:{t % 60:05.2f}"
+
+
+def chat_ass(log, start, length, path, lines=13):
+    """Subtitle file that replays chat: each new message pushes the last few lines up."""
+    msgs = [(ts - start, u, tx) for ts, u, tx in log if 0 <= ts - start <= length]
+    head = ("[Script Info]\nScriptType: v4.00+\nPlayResX: 1080\nPlayResY: 1920\n\n[V4+ Styles]\n"
+            "Format: Name,Fontname,Fontsize,PrimaryColour,SecondaryColour,OutlineColour,BackColour,Bold,Italic,"
+            "Underline,StrikeOut,ScaleX,ScaleY,Spacing,Angle,BorderStyle,Outline,Shadow,Alignment,MarginL,MarginR,"
+            "MarginV,Encoding\nStyle: Chat,Arial,34,&H00FFFFFF,&H00FFFFFF,&H00000000,&H00000000,0,0,0,0,100,100,0,0,1,"
+            "2,0,1,30,30,40,1\n\n[Events]\nFormat: Layer,Start,End,Style,Name,MarginL,MarginR,MarginV,Effect,Text\n")
+    palette = ["FF7F50", "1E90FF", "32CD32", "FF69B4", "FFD700", "9ACD32", "BA55D3", "00CED1"]
+    nl = chr(92) + "N"
+
+    def line(user, text):
+        c = palette[sum(map(ord, user)) % len(palette)]
+        bgr = c[4:6] + c[2:4] + c[0:2]  # ASS colours are BGR
+        return "{%sc&H%s&%sb1}%s{%sc&HFFFFFF&%sb0}: %s" % (
+            chr(92), bgr, chr(92), ass_escape(user), chr(92), chr(92), ass_escape(text[:48]))
+
+    rows = []
+    for i, (rt, _, _) in enumerate(msgs):
+        end = msgs[i + 1][0] if i + 1 < len(msgs) else length
+        body = nl.join(line(u, t) for _, u, t in msgs[max(0, i - lines + 1): i + 1])
+        rows.append(f"Dialogue: 0,{ass_time(rt)},{ass_time(end)},Chat,,0,0,0,,{body}")
+    Path(path).write_text(head + "\n".join(rows) + "\n")
+    return bool(msgs)
+
+
+def layout(cam):
+    """Facecam (reaction) on top, gameplay in the middle, room for chat at the bottom."""
+    if not cam:
+        return ("[0:v]split[a][b];[a]scale=1080:1920:force_original_aspect_ratio=increase,"
+                "crop=1080:1920,boxblur=30[bg];[b]scale=1080:-2[fg];[bg][fg]overlay=(W-w)/2:(H-h)/2")
+    x, y, w, h = cam
+    return (f"[0:v]split[g][c];[g]scale=1080:608[game];"
+            f"[c]crop=iw*{w}:ih*{h}:iw*{x}:ih*{y},scale=1080:640:force_original_aspect_ratio=increase,"
+            f"crop=1080:640[cam];[cam][game]vstack=inputs=2,pad=1080:1920:0:0:black")
+
+
+def make_clip(channel, t, buf_dir, out_dir, before, after, chatlog, game, credit, cam, show_chat):
     time.sleep(after + 6)  # let the payoff and the last segment finish writing
     segs = sorted(f for f in buf_dir.glob("*.ts") if t - before - 5 <= int(f.stem) <= t + after)
     segs = segs[:-1] if len(segs) > 1 and time.time() - int(segs[-1].stem) < 6 else segs
     if not segs:
         return print(f"[{channel}] no footage buffered, skipped")
-    title, caption, tags = describe(channel, msgs, game)
+    log = list(chatlog)
+    window = [x for x in log if t - before <= x[0] <= t + after]
+    texts = [x[2] for x in log if t - 30 <= x[0] <= t + 2]
+    title, caption, tags = describe(channel, texts, game)
     slug = re.sub(r"[^A-Za-z0-9]+", "-", title).strip("-")[:40]
     stamp = time.strftime("%H%M%S", time.localtime(t))
     name = out_dir / f"{channel}_{stamp}_{slug}.mp4"
     lst = buf_dir / f"concat_{t}.txt"
     lst.write_text("".join(f"file '{f.resolve()}'\n" for f in segs))
-    vf = ("[0:v]split[a][b];[a]scale=1080:1920:force_original_aspect_ratio=increase,"
-          "crop=1080:1920,boxblur=30[bg];[b]scale=1080:-2[fg];[bg][fg]overlay=(W-w)/2:(H-h)/2")
+    vf = layout(cam)
+    ass = buf_dir / f"chat_{t}.ass"
+    if show_chat and chat_ass(window, t - before, before + after, ass):
+        vf += f",subtitles={ass.name}"
     subprocess.run(["ffmpeg", "-y", "-loglevel", "error", "-f", "concat", "-safe", "0", "-i", str(lst),
-                    "-filter_complex", vf, "-ss", str(max(0, t - before - int(segs[0].stem))), "-t", str(before + after), "-c:v", "libx264", "-preset", "fast", "-crf", "20",
-                    "-c:a", "aac", str(name)], check=True)
-    lst.unlink(missing_ok=True)
+                    "-filter_complex", vf, "-ss", str(max(0, t - before - int(segs[0].stem))),
+                    "-t", str(before + after), "-c:v", "libx264", "-preset", "fast", "-crf", "20",
+                    "-c:a", "aac", str(name.resolve())], check=True, cwd=buf_dir)
+    lst.unlink(missing_ok=True); ass.unlink(missing_ok=True)
     credit_line = f"Clip from {credit or '@' + channel}'s stream"
     with open(out_dir / "clips.md", "a") as f:
         f.write(f"## {title}\n`{name.name}` ({channel}, {time.strftime('%H:%M:%S', time.localtime(t))})\n\n"
-                f"{caption}\n{credit_line}\n{tags}\n\nChat said: {' | '.join(msgs[-8:])}\n\n")
+                f"{caption}\n{credit_line}\n{tags}\n\nChat said: {' | '.join(texts[-8:])}\n\n")
     print(f"[{channel}] clip saved: {name.name}  <- {title}")
 
 
@@ -138,15 +191,17 @@ def describe(channel, msgs, game):
 def watch(channel, a, out_dir):
     buf = Path(a.buffer) / channel
     det = SpikeDetector(a.factor, a.min_msgs, a.cooldown)
-    recent = collections.deque(maxlen=60)
+    chatlog = collections.deque(maxlen=8000)
+    cam = None if a.cam == "none" else tuple(float(v) for v in a.cam.split(","))
 
-    def on_msg(text):
-        recent.append(text.strip())
+    def on_msg(user, text):
         now = time.time()
+        chatlog.append((now, user, text.strip()))
         if det.add(now, 2.0 if HYPE.search(text) else 1.0):
             print(f"[{channel}] chat spike!")
             threading.Thread(target=make_clip, daemon=True, args=(
-                channel, int(now), buf, out_dir, a.before, a.after, list(recent), a.game, a.credit)).start()
+                channel, int(now), buf, out_dir, a.before, a.after, chatlog, a.game, a.credit,
+                cam, not a.no_chat)).start()
 
     threading.Thread(target=record, args=(channel, buf), daemon=True).start()
     threading.Thread(target=prune, args=(buf,), daemon=True).start()
@@ -163,6 +218,9 @@ def main():
     ap.add_argument("--factor", type=float, default=3.0, help="spike = this many times normal chat rate")
     ap.add_argument("--min-msgs", type=float, default=25, help="minimum weighted msgs per 10s to count")
     ap.add_argument("--cooldown", type=int, default=90, help="seconds between clips per channel")
+    ap.add_argument("--cam", default="0,0.12,0.21,0.28",
+                    help="facecam box as x,y,w,h fractions of the frame (default fits CaseOh); 'none' = no facecam")
+    ap.add_argument("--no-chat", action="store_true", help="don't burn the live chat into the clip")
     ap.add_argument("--buffer", default="_buffer")
     ap.add_argument("--out", default="clips")
     a = ap.parse_args()

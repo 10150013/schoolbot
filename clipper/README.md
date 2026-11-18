@@ -31,3 +31,9 @@ Tune with `--factor`, `--min-msgs`, `--cooldown`, `--before`, `--after`. Leave i
 Titles need `ANTHROPIC_API_KEY`; without it clips still save with a generic title.
 Big streamers' chats move fast, so the default `--min-msgs 25` suits them; lower it for smaller channels.
 Check every clip before posting, and only clip streamers who allow it.
+
+### Clip layout (live mode)
+
+Facecam on top (his reaction), gameplay in the middle, live chat replaying at the bottom.
+The facecam box is set with `--cam x,y,w,h` as fractions of the frame; the default fits CaseOh.
+`--cam none` skips the facecam, and `--no-chat` leaves the chat off.
