@@ -27,6 +27,14 @@ nav a{margin-right:12px;color:var(--accent)}
 <h1>Clip Finder</h1>
 <p>Paste a stream transcript into Claude and get the best moments, with timestamps and titles.</p>
 <div class="note"><strong>Only clip streams you're allowed to:</strong> your own, or creators who run a clipping program or said yes. Credit the streamer. Always watch a moment before cutting it; a transcript can't show what was seen or heard.</div>
+<h2>Clipper AI</h2>
+<div id="ai" hidden>
+<input id="ctx" placeholder="Streamer and game (optional), e.g. Kai playing Elden Ring" style="width:100%;padding:10px;margin-bottom:8px;border:1px solid var(--line);border-radius:6px;background:var(--card);color:var(--fg);font:inherit">
+<textarea id="tr" rows="8" placeholder="Paste the transcript with timestamps" style="width:100%;padding:10px;border:1px solid var(--line);border-radius:6px;background:var(--card);color:var(--fg);font:inherit"></textarea>
+<p><button id="go">Find moments</button> <button id="stop" hidden>Stop</button></p>
+<pre id="out" hidden></pre>
+</div>
+<p id="noai" class="sub">Clipper AI needs a Claude-enabled viewer. The prompts below work in any Claude chat.</p>
 <h2>Steps</h2>
 <ol>
 <li>Get a transcript. On YouTube: <em>…more</em> → <em>Show transcript</em> → copy with timestamps. Twitch has none; use a YouTube VOD upload or a transcription tool.</li>
@@ -80,6 +88,27 @@ Campaign requirements: [hashtags, tags or "none"]</pre>
 <button data-copy="pr3">Copy</button>
 </main>
 <script>
+(async function(){
+  var sample=window.claude&&await window.claude.use('sample');
+  if(!sample)return;
+  document.getElementById('ai').hidden=false;document.getElementById('noai').hidden=true;
+  var go=document.getElementById('go'),stop=document.getElementById('stop'),out=document.getElementById('out'),ctl;
+  stop.onclick=function(){if(ctl)ctl.abort()};
+  go.onclick=async function(){
+    var tr=document.getElementById('tr').value.trim();
+    if(!tr){return}
+    var ctx=document.getElementById('ctx').value.trim();
+    var prompt=document.getElementById('pr1').textContent+'\n'+(ctx?'Context: '+ctx+'\n':'')+tr;
+    ctl=new AbortController();go.disabled=true;stop.hidden=false;out.hidden=false;out.textContent='Reading transcript...';
+    try{
+      var r=await sample(prompt,{cache:false,modelTier:'complex',signal:ctl.signal,onText:function(e){out.textContent=e.text}});
+      out.textContent=r.text+(r.truncated?'\n\n[Output was cut off. Paste a shorter part.]':'');
+    }catch(e){
+      if(!(e&&e.code==='aborted'))out.textContent=(e&&e.text?e.text+'\n\n':'')+'Failed: '+((e&&e.message)||'unknown error');
+    }
+    go.disabled=false;stop.hidden=true;
+  };
+})();
 document.querySelectorAll('button[data-copy]').forEach(function(b){
   b.addEventListener('click',function(){
     var t=document.getElementById(b.dataset.copy).textContent;
