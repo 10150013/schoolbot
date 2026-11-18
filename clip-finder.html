@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Clip Finder</title>
+<style>
+:root{--bg:#fff;--fg:#16181d;--muted:#5b6270;--card:#f4f5f8;--line:#dde0e7;--accent:#6d4aff}
+@media (prefers-color-scheme:dark){:root{--bg:#101217;--fg:#eceef3;--muted:#9aa1b0;--card:#1a1d26;--line:#2b3040;--accent:#9a82ff}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.55 system-ui,sans-serif}
+main{max-width:760px;margin:0 auto;padding:24px 16px 64px}
+h1{font-size:2rem;margin:.2em 0}h2{margin-top:2.2em;font-size:1.3rem}h3{margin:1.6em 0 .4em;font-size:1rem}
+.sub{color:var(--muted)}
+.note{background:var(--card);border-left:4px solid var(--accent);padding:12px 16px;border-radius:6px;margin:1.2em 0}
+table{border-collapse:collapse;width:100%;font-size:.93rem}
+th,td{border:1px solid var(--line);padding:8px 10px;text-align:left;vertical-align:top}
+th{background:var(--card)}
+.table-wrap{overflow-x:auto}
+pre{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:14px;white-space:pre-wrap;word-wrap:break-word;font:.88rem/1.5 ui-monospace,monospace;margin:.4em 0}
+button{background:var(--accent);color:#fff;border:0;border-radius:6px;padding:8px 14px;font:inherit;cursor:pointer}
+nav a{margin-right:12px;color:var(--accent)}
+</style>
+</head>
+<body>
+<main>
+<p class="sub">@ALEX.PROMPT · LIVE CLIPPER LITE</p>
+<h1>Clip Finder</h1>
+<p>Find the best moments in any stream in minutes, with three prompts you paste into Claude. No software, no setup.</p>
+<nav><a href="#how">How it works</a><a href="#p1">Prompt 1</a><a href="#p23">Prompts 2 &amp; 3</a><a href="#programs">Clipping programs</a><a href="#compare">By hand vs. Live Clipper</a></nav>
+
+<div class="note"><strong>Read this first.</strong> Only clip streams you're allowed to clip: your own, or creators who run a clipping program or have said yes. Always credit the streamer. Most clips get few views, and nothing here guarantees income.</div>
+
+<h2 id="how">01 · How it works</h2>
+<p>A 3-hour stream has a handful of moments worth posting. Finding them is the slow part. Clip Finder gets Claude to read the whole stream for you and hand back the best moments, with timestamps and titles.</p>
+<ol>
+<li>Get the stream's transcript (below).</li>
+<li>Paste Prompt 1 into Claude, then the transcript. Get your top 5 moments.</li>
+<li>Use Prompts 2 and 3 for stronger titles and the post caption.</li>
+<li>Cut, reframe and caption each clip in your editor.</li>
+</ol>
+<h3>Getting a transcript</h3>
+<ul>
+<li><strong>YouTube streams and videos (easiest):</strong> open the video → click <em>…more</em> under the title → <em>Show transcript</em> → select all the text in the panel and copy it. Keep the timestamps in.</li>
+<li><strong>Twitch VODs:</strong> Twitch doesn't show transcripts. Many streamers upload their VODs to a YouTube channel, so use those. Otherwise you need a transcription tool.</li>
+<li><strong>Your own recordings:</strong> any transcription tool that keeps timestamps works.</li>
+</ul>
+<h3>Long streams</h3>
+<p>If the transcript is very long, paste it in parts (for example one hour at a time) and run Prompt 1 on each part. Then ask Claude: "Of all the moments you found, which 5 are the strongest?"</p>
+<div class="note"><strong>What a transcript can't tell you:</strong> it only has what was said. It can't hear a scream, see a clutch play or read chat. Always watch each moment before you cut it.</div>
+
+<h2 id="p1">02 · Prompt 1: The Moment Finder</h2>
+<p>Paste this into Claude first, then paste the transcript straight after it.</p>
+<pre id="pr1">You're an editor for a short-form clipping channel. I'm going to paste the transcript of a livestream, with timestamps. Find the 5 best moments to post as vertical clips on TikTok, Reels and Shorts.
+
+A good moment works on its own, with no context: a reaction with a clear cause, a punchline, a fail, a clutch play, a story with an ending, or a hot take. Loud isn't the same as good. Skip anything that needs the viewer to know what happened earlier.
+
+For each moment, give me:
+1. Start and end time. Start a few seconds before the setup and end just after the payoff. Aim for 15 to 45 seconds; let the story decide the length.
+2. What happens, in one line.
+3. Why it works as a clip, in one line.
+4. The first 3 seconds: what the clip should open on (usually the biggest reaction or the payoff).
+5. A hook title: 2 to 6 words, in capitals, that makes people want the ending without giving it away. Never claim something that didn't happen.
+6. A spoiler warning if the moment gives away a story or plot point.
+
+Rank them strongest first. Then list up to 3 runners-up with just the times and one line each.
+
+If the transcript is cut off or too long to read fully, tell me which part you covered.
+
+Transcript:</pre>
+<button data-copy="pr1">Copy Prompt 1</button>
+<p class="sub">Tip: add the game and streamer at the top for better titles, e.g. "This is &lt;streamer&gt; playing GTA 6 on launch night."</p>
+
+<h2 id="p23">03 · Prompts 2 &amp; 3: Titles &amp; post text</h2>
+<h3>Prompt 2: Hook titles</h3>
+<pre id="pr2">Write 8 hook titles for a short clip. Rules: 2 to 6 words, all capitals, make people want to see the ending without giving it away, no clickbait that the clip doesn't deliver, no story spoilers.
+
+Mix these styles: a surprise ("HE DIDN'T SEE IT COMING"), chat or the crowd ("CHAT KNEW BEFORE HIM"), a number ("3 SECONDS LEFT"), and irony ("HE SAID IT WAS EASY").
+
+Then tell me which one you'd pick and why, in one line.
+
+What happens in the clip:</pre>
+<button data-copy="pr2">Copy Prompt 2</button>
+
+<h3>Prompt 3: Post caption</h3>
+<pre id="pr3">Write the post text for this clip on TikTok, Reels and Shorts.
+
+Include:
+- A first line that hooks, different from the on-screen title
+- The credit line exactly as I give it below
+- Any hashtags or tags the clipping campaign requires (I'll list them)
+- 3 to 5 relevant hashtags, no more
+
+Keep it under 150 characters before the hashtags. No promises the clip doesn't deliver.
+
+Clip: [what happens]
+Title on screen: [title]
+Credit line: [e.g. "Clip from @streamer's stream"]
+Campaign requirements: [hashtags, tags or "none"]</pre>
+<button data-copy="pr3">Copy Prompt 3</button>
+
+<h2 id="programs">04 · Clipping programs on one page</h2>
+<p>A clipping program is a creator (or their team) paying people to post short clips of their streams. You post clips on your own accounts, submit the links, and get paid by views. Platforms like Whop host many of them as "content rewards"; some creators run their own on Discord.</p>
+<h3>The usual rules (every campaign differs)</h3>
+<ul>
+<li>Only the listed creator's content, sometimes only recent streams.</li>
+<li>Credit: their name or tag in the caption, sometimes a required hashtag or sound.</li>
+<li>Quality: vertical, captions, no other clipper's watermark, no reposting other people's clips.</li>
+<li>Real views only: bought or botted views get accounts banned, and usually unpaid.</li>
+<li>Pay is usually per 1,000 views, often with a minimum and a cap. Read the current numbers on the campaign page.</li>
+</ul>
+<h3>Without a program</h3>
+<p>Clipping a creator who hasn't allowed it can get your posts taken down for copyright and your account banned. Your own streams are always fine. If you're unsure, ask the creator or their manager first.</p>
+<h3>Honest expectations</h3>
+<p>Most clips get few views, and many people earn little or nothing at first. What helps: posting fast, posting often, a strong first 3 seconds, and moments that make sense without context.</p>
+
+<h2 id="compare">05 · By hand vs. Live Clipper</h2>
+<p>Clip Finder finds the moments. Then you still have to make every clip yourself. That's the part Live Clipper does for you.</p>
+<div class="table-wrap"><table>
+<tr><th>Step</th><th>With Clip Finder (by hand)</th><th>With Live Clipper</th></tr>
+<tr><td>Find moments</td><td>Copy the transcript, paste it in, check each moment</td><td>Reads chat live and saves the moment chat explodes. Also listens for shouting, reactions and crowd noise in old streams</td></tr>
+<tr><td>Live streams</td><td>Wait for the VOD and a transcript</td><td>Watches live, overnight, on several channels at once</td></tr>
+<tr><td>Download &amp; cut</td><td>Download the VOD, scrub to each timestamp, cut it</td><td>Director mode does the full edit, the way clipping channels cut</td></tr>
+<tr><td>Edit</td><td>Reframe to vertical, facecam on top, zooms, cold open</td><td>Done automatically</td></tr>
+<tr><td>Captions</td><td>Generate, fix and style them</td><td>Word-by-word, key words in colour, swears masked</td></tr>
+<tr><td>Title &amp; post</td><td>Prompts 2 and 3</td><td>Hook title on the clip, post text and credit line written for you</td></tr>
+<tr><td>Review</td><td>Open every file</td><td>One page with every clip, with text ready to copy</td></tr>
+</table></div>
+</main>
+<script>
+document.querySelectorAll('button[data-copy]').forEach(function(b){
+  b.addEventListener('click',function(){
+    var t=document.getElementById(b.dataset.copy).textContent;
+    var done=function(){var o=b.textContent;b.textContent='Copied';setTimeout(function(){b.textContent=o},1500)};
+    if(navigator.clipboard){navigator.clipboard.writeText(t).then(done,function(){})}
+  });
+});
+</script>
+</body>
+</html>
