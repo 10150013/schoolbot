@@ -15,3 +15,19 @@ and `clips.md` with hook titles, post text, credit line and hashtags.
 - Long streams are read in chunks, then the best moments overall are picked.
 - It can't see or hear the video, only read the transcript. Watch every clip before posting.
 - Only clip streams you own or have permission to clip, and credit the streamer.
+
+## Live mode: clip when chat goes crazy
+
+```
+python live.py kaicenat xqc --game "GTA 6"
+```
+
+Watches Twitch channels live (needs `streamlink`, installed by requirements). For each one it keeps a
+rolling 5-minute recording and reads chat. When chat's message rate jumps to 3x normal (hype words like
+LUL, KEKW, POG and `??` count double), it saves the last 35s plus 10s after as a 1080x1920 clip in `clips/`,
+and appends a title, post text and credit line (written from what chat said) to `clips/clips.md`.
+
+Tune with `--factor`, `--min-msgs`, `--cooldown`, `--before`, `--after`. Leave it running; Ctrl+C stops it.
+Titles need `ANTHROPIC_API_KEY`; without it clips still save with a generic title.
+Big streamers' chats move fast, so the default `--min-msgs 25` suits them; lower it for smaller channels.
+Check every clip before posting, and only clip streamers who allow it.
