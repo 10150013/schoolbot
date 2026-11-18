@@ -5,7 +5,7 @@ Give it a stream or VOD, get finished vertical clips plus titles and post text.
 ```
 pip install -r requirements.txt   # also needs ffmpeg
 export ANTHROPIC_API_KEY=...
-python clipper.py "https://youtube.com/watch?v=..." --game "Kai playing Elden Ring" --credit "@kai"
+python clipper.py "https://youtube.com/watch?v=..." --length 45 --game "Kai playing Elden Ring" --credit "@kai"
 ```
 
 Output goes to `clips/`: one 1080x1920 mp4 per moment (blurred background, captions burned in)

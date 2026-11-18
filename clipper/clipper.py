@@ -18,7 +18,7 @@ MODEL = "claude-sonnet-5-5"
 
 PROMPT = """You're an editor for a short-form clipping channel. Below is a livestream transcript, one segment per line as [seconds] text. Find the {n} best moments to post as vertical clips on TikTok, Reels and Shorts.
 
-A good moment works on its own with no context: a reaction with a clear cause, a punchline, a fail, a clutch play, a story with an ending, or a hot take. Loud isn't the same as good. Skip anything that needs earlier context. Start a few seconds before the setup and end just after the payoff; 15 to 45 seconds. Never overlap moments.
+A good moment works on its own with no context: a reaction with a clear cause, a punchline, a fail, a clutch play, a story with an ending, or a hot take. Loud isn't the same as good. Skip anything that needs earlier context. Start a few seconds before the setup and end just after the payoff; each clip should run about {length} seconds ({lo} to {length}). Never overlap moments.
 
 {context}
 Return ONLY a JSON array, strongest first, each item:
@@ -61,7 +61,7 @@ def segs_from_whisper(video):
     return [{"start": s.start, "end": s.end, "text": s.text.strip()} for s in segs]
 
 
-def find_moments(segs, n, game):
+def find_moments(segs, n, game, length):
     import anthropic
     lines = "\n".join(f"[{int(s['start'])}] {s['text']}" for s in segs)
     ctx = f"Context: {game}\n" if game else ""
@@ -77,7 +77,7 @@ def find_moments(segs, n, game):
     found = []
     for part in chunks:
         msg = client.messages.create(model=MODEL, max_tokens=4000, messages=[
-            {"role": "user", "content": PROMPT.format(n=n, context=ctx, transcript=part)}])
+            {"role": "user", "content": PROMPT.format(n=n, length=length, lo=length - 5, context=ctx, transcript=part)}])
         text = msg.content[0].text
         found += json.loads(text[text.index("["): text.rindex("]") + 1])
     if len(chunks) > 1:
@@ -105,8 +105,9 @@ def write_srt(segs, start, end, path):
     return bool(rows)
 
 
-def cut(video, m, segs, out_dir, idx):
-    start, end = float(m["start"]), float(m["end"])
+def cut(video, m, segs, out_dir, idx, length):
+    start = float(m["start"])
+    end = min(float(m["end"]), start + length)
     base = out_dir / f"{idx:02}_{re.sub(r'[^A-Za-z0-9]+', '-', m['title']).strip('-')[:40]}"
     srt = base.with_suffix(".srt")
     has_subs = write_srt(segs, start, end, srt)
@@ -128,6 +129,7 @@ def main():
     ap.add_argument("--game", default="")
     ap.add_argument("--credit", default="")
     ap.add_argument("--count", type=int, default=5)
+    ap.add_argument("--length", type=int, default=45, help="clip length in seconds")
     ap.add_argument("--out", default="clips")
     a = ap.parse_args()
     if not os.environ.get("ANTHROPIC_API_KEY"):
@@ -138,11 +140,11 @@ def main():
     print("Transcript...")
     segs = segs_from_json3(subs) if subs else segs_from_whisper(video)
     print(f"Finding moments in {len(segs)} segments...")
-    moments = find_moments(segs, a.count, a.game)
+    moments = find_moments(segs, a.count, a.game, a.length)
     report = ["# Clips\n"]
     for i, m in enumerate(moments, 1):
         print(f"Cutting {i}/{len(moments)}: {m['title']}")
-        f = cut(video, m, segs, out.resolve(), i)
+        f = cut(video, m, segs, out.resolve(), i, a.length)
         credit = f"Clip from {a.credit}'s stream" if a.credit else ""
         tags = " ".join("#" + h.lstrip("#") for h in m.get("hashtags", []))
         report.append(f"## {i}. {m['title']}\n`{f.name}` ({m['start']:.0f}s to {m['end']:.0f}s)\n\n"
