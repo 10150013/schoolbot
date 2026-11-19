@@ -15,6 +15,8 @@ import argparse, collections, json, os, re, socket, subprocess, threading, time
 from pathlib import Path
 
 MODEL = "claude-sonnet-5-5"
+# Facecam boxes (x,y,w,h as fractions of the frame) for streamers whose layout is known.
+CAM_PRESETS = {"caseoh_": "0,0.12,0.21,0.28"}
 HYPE = re.compile(r"\b(LUL|OMEGALUL|KEKW|LMAO|POG\w*|W|WTF|NO WAY|CLIP IT|CLIP|\?\?+|HOLY|INSANE)\b", re.I)
 
 
@@ -188,11 +190,11 @@ def describe(channel, msgs, game):
         return fallback
 
 
-def watch(channel, a, out_dir):
+def watch(channel, a, out_dir, camspec):
     buf = Path(a.buffer) / channel
     det = SpikeDetector(a.factor, a.min_msgs, a.cooldown)
     chatlog = collections.deque(maxlen=8000)
-    cam = None if a.cam == "none" else tuple(float(v) for v in a.cam.split(","))
+    cam = None if camspec == "none" else tuple(float(v) for v in camspec.split(","))
 
     def on_msg(user, text):
         now = time.time()
@@ -218,8 +220,9 @@ def main():
     ap.add_argument("--factor", type=float, default=3.0, help="spike = this many times normal chat rate")
     ap.add_argument("--min-msgs", type=float, default=25, help="minimum weighted msgs per 10s to count")
     ap.add_argument("--cooldown", type=int, default=90, help="seconds between clips per channel")
-    ap.add_argument("--cam", default="0,0.12,0.21,0.28",
-                    help="facecam box as x,y,w,h fractions of the frame (default fits CaseOh); 'none' = no facecam")
+    ap.add_argument("--cam", default=None,
+                    help="facecam box x,y,w,h as fractions of the frame, for all channels; 'none' = no facecam. "
+                         "Per channel: name@x,y,w,h or name@none")
     ap.add_argument("--no-chat", action="store_true", help="don't burn the live chat into the clip")
     ap.add_argument("--buffer", default="_buffer")
     ap.add_argument("--out", default="clips")
@@ -227,7 +230,9 @@ def main():
     out = Path(a.out); out.mkdir(parents=True, exist_ok=True)
     print("Watching:", ", ".join(a.channels), "(Ctrl+C to stop)")
     for ch in a.channels:
-        threading.Thread(target=watch, args=(ch.lower().lstrip("#"), a, out), daemon=True).start()
+        name, _, spec = ch.lower().lstrip("#").partition("@")
+        spec = spec or a.cam or CAM_PRESETS.get(name, "none")
+        threading.Thread(target=watch, args=(name, a, out, spec), daemon=True).start()
     try:
         while True:
             time.sleep(1)
