@@ -11,7 +11,7 @@ text written from what chat said.
 Needs ffmpeg, streamlink, and ANTHROPIC_API_KEY (optional: without it, titles
 are generic). Only clip streamers who allow it, and credit them.
 """
-import argparse, collections, json, os, re, socket, subprocess, threading, time
+import argparse, collections, json, os, re, shutil, socket, subprocess, threading, time
 from pathlib import Path
 
 MODEL = "claude-sonnet-5-5"
@@ -95,50 +95,67 @@ def prune(buf_dir, keep=330):
                 f.unlink(missing_ok=True)
 
 
-def ass_escape(t):
-    return t.replace("\\", "").replace("{", "(").replace("}", ")").replace("\n", " ")
+FONTS = ["/System/Library/Fonts/Supplemental/Arial Bold.ttf", "/System/Library/Fonts/Helvetica.ttc",
+         "/Library/Fonts/Arial.ttf", "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf"]
+PALETTE = [(255, 127, 80), (30, 144, 255), (50, 205, 50), (255, 105, 180),
+           (255, 215, 0), (154, 205, 50), (186, 85, 211), (0, 206, 209)]
 
 
-def ass_time(t):
-    t = max(0.0, t)
-    return f"{int(t // 3600)}:{int(t % 3600 // 60):02}:{t % 60:05.2f}"
-
-
-def chat_ass(log, start, length, path, lines=13):
-    """Subtitle file that replays chat: each new message pushes the last few lines up."""
-    msgs = [(ts - start, u, tx) for ts, u, tx in log if 0 <= ts - start <= length]
-    head = ("[Script Info]\nScriptType: v4.00+\nPlayResX: 1080\nPlayResY: 1920\n\n[V4+ Styles]\n"
-            "Format: Name,Fontname,Fontsize,PrimaryColour,SecondaryColour,OutlineColour,BackColour,Bold,Italic,"
-            "Underline,StrikeOut,ScaleX,ScaleY,Spacing,Angle,BorderStyle,Outline,Shadow,Alignment,MarginL,MarginR,"
-            "MarginV,Encoding\nStyle: Chat,Arial,34,&H00FFFFFF,&H00FFFFFF,&H00000000,&H00000000,0,0,0,0,100,100,0,0,1,"
-            "2,0,1,30,30,40,1\n\n[Events]\nFormat: Layer,Start,End,Style,Name,MarginL,MarginR,MarginV,Effect,Text\n")
-    palette = ["FF7F50", "1E90FF", "32CD32", "FF69B4", "FFD700", "9ACD32", "BA55D3", "00CED1"]
-    nl = chr(92) + "N"
-
-    def line(user, text):
-        c = palette[sum(map(ord, user)) % len(palette)]
-        bgr = c[4:6] + c[2:4] + c[0:2]  # ASS colours are BGR
-        return "{%sc&H%s&%sb1}%s{%sc&HFFFFFF&%sb0}: %s" % (
-            chr(92), bgr, chr(92), ass_escape(user), chr(92), chr(92), ass_escape(text[:48]))
-
-    rows = []
-    for i, (rt, _, _) in enumerate(msgs):
-        end = msgs[i + 1][0] if i + 1 < len(msgs) else length
-        body = nl.join(line(u, t) for _, u, t in msgs[max(0, i - lines + 1): i + 1])
-        rows.append(f"Dialogue: 0,{ass_time(rt)},{ass_time(end)},Chat,,0,0,0,,{body}")
-    Path(path).write_text(head + "\n".join(rows) + "\n")
-    return bool(msgs)
+def chat_overlay(log, base, length, work, lines=13, step=0.5):
+    """Pre-render the chat as transparent PNG frames (no ffmpeg text/subtitle support needed).
+    Returns an ffmpeg concat list that replays chat from time `base`, or None."""
+    from PIL import Image, ImageDraw, ImageFont
+    msgs = sorted((ts - base, u, tx) for ts, u, tx in log if 0 <= ts - base <= length)
+    if not msgs:
+        return None
+    font = None
+    for f in FONTS:
+        try:
+            font = ImageFont.truetype(f, 34, index=0)
+            break
+        except OSError:
+            continue
+    font = font or ImageFont.load_default(34)
+    W, H, lh = 1080, 672, 44
+    work.mkdir(parents=True, exist_ok=True)
+    entries, last_n, n = [], -1, 0
+    steps = int(length / step) + 1
+    for i in range(steps):
+        t = i * step
+        n = sum(1 for m in msgs if m[0] <= t)
+        if n != last_n or not entries:
+            img = Image.new("RGBA", (W, H), (0, 0, 0, 0))
+            d = ImageDraw.Draw(img)
+            y = H - 40 - lh
+            for _, u, tx in reversed(msgs[max(0, n - lines): n]):
+                col = PALETTE[sum(map(ord, u)) % len(PALETTE)]
+                d.text((30, y), u, font=font, fill=col, stroke_width=2, stroke_fill=(0, 0, 0))
+                x = 30 + d.textlength(u, font=font)
+                text = ": " + tx
+                while len(text) > 2 and x + d.textlength(text, font=font) > W - 30:
+                    text = text[:-2]
+                d.text((x, y), text, font=font, fill=(255, 255, 255), stroke_width=2, stroke_fill=(0, 0, 0))
+                y -= lh
+            p = work / f"chat_{len(entries):04}.png"
+            img.save(p)
+            entries.append([p, 0.0])
+            last_n = n
+        entries[-1][1] += step
+    lst = work / "chat.txt"
+    body = "".join(f"file '{p.resolve()}'\nduration {d:.2f}\n" for p, d in entries)
+    lst.write_text(body + f"file '{entries[-1][0].resolve()}'\n")
+    return lst
 
 
 def layout(cam):
     """Facecam (reaction) on top, gameplay in the middle, room for chat at the bottom."""
     if not cam:
         return ("[0:v]split[a][b];[a]scale=1080:1920:force_original_aspect_ratio=increase,"
-                "crop=1080:1920,boxblur=30[bg];[b]scale=1080:-2[fg];[bg][fg]overlay=(W-w)/2:(H-h)/2")
+                "crop=1080:1920,boxblur=30[bg];[b]scale=1080:-2[fg];[bg][fg]overlay=(W-w)/2:(H-h)/2[base]")
     x, y, w, h = cam
     return (f"[0:v]split[g][c];[g]scale=1080:608[game];"
             f"[c]crop=iw*{w}:ih*{h}:iw*{x}:ih*{y},scale=1080:640:force_original_aspect_ratio=increase,"
-            f"crop=1080:640[cam];[cam][game]vstack=inputs=2,pad=1080:1920:0:0:black")
+            f"crop=1080:640[cam];[cam][game]vstack=inputs=2,pad=1080:1920:0:0:black[base]")
 
 
 def make_clip(channel, t, buf_dir, out_dir, before, after, chatlog, game, credit, cam, show_chat):
@@ -157,14 +174,26 @@ def make_clip(channel, t, buf_dir, out_dir, before, after, chatlog, game, credit
     lst = buf_dir / f"concat_{t}.txt"
     lst.write_text("".join(f"file '{f.resolve()}'\n" for f in segs))
     vf = layout(cam)
-    ass = buf_dir / f"chat_{t}.ass"
-    if show_chat and chat_ass(window, t - before, before + after, ass):
-        vf += f",subtitles={ass.name}"
-    subprocess.run(["ffmpeg", "-y", "-loglevel", "error", "-f", "concat", "-safe", "0", "-i", str(lst),
-                    "-filter_complex", vf, "-ss", str(max(0, t - before - int(segs[0].stem))),
+    base = int(segs[0].stem)
+    chat = None
+    if show_chat:
+        try:
+            chat = chat_overlay(window, base, t + after - base + 1, buf_dir / f"chat_{t}")
+        except ImportError:
+            print("Pillow missing, chat not added. Run: python3 -m pip install pillow")
+    inputs = ["-f", "concat", "-safe", "0", "-i", str(lst)]
+    if chat:
+        inputs += ["-f", "concat", "-safe", "0", "-i", str(chat)]
+        vf += ";[base][1:v]overlay=0:H-h:eof_action=pass[vout]"
+    else:
+        vf += ";[base]null[vout]"
+    subprocess.run(["ffmpeg", "-y", "-loglevel", "error", *inputs, "-filter_complex", vf,
+                    "-map", "[vout]", "-map", "0:a?", "-ss", str(max(0, t - before - base)),
                     "-t", str(before + after), "-c:v", "libx264", "-preset", "fast", "-crf", "20",
-                    "-c:a", "aac", str(name.resolve())], check=True, cwd=buf_dir)
-    lst.unlink(missing_ok=True); ass.unlink(missing_ok=True)
+                    "-pix_fmt", "yuv420p", "-c:a", "aac", str(name.resolve())], check=True)
+    if chat:
+        shutil.rmtree(chat.parent, ignore_errors=True)
+    lst.unlink(missing_ok=True)
     credit_line = f"Clip from {credit or '@' + channel}'s stream"
     with open(out_dir / "clips.md", "a") as f:
         f.write(f"## {title}\n`{name.name}` ({channel}, {time.strftime('%H:%M:%S', time.localtime(t))})\n\n"
@@ -191,7 +220,7 @@ def describe(channel, msgs, game):
 
 
 def watch(channel, a, out_dir, camspec):
-    buf = Path(a.buffer) / channel
+    buf = (Path(a.buffer) / channel).resolve()
     det = SpikeDetector(a.factor, a.min_msgs, a.cooldown)
     chatlog = collections.deque(maxlen=8000)
     cam = None if camspec == "none" else tuple(float(v) for v in camspec.split(","))
@@ -227,7 +256,7 @@ def main():
     ap.add_argument("--buffer", default="_buffer")
     ap.add_argument("--out", default="clips")
     a = ap.parse_args()
-    out = Path(a.out); out.mkdir(parents=True, exist_ok=True)
+    out = Path(a.out).resolve(); out.mkdir(parents=True, exist_ok=True)
     print("Watching:", ", ".join(a.channels), "(Ctrl+C to stop)")
     for ch in a.channels:
         name, _, spec = ch.lower().lstrip("#").partition("@")
