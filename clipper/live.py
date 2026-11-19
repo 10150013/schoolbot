@@ -17,7 +17,9 @@ from pathlib import Path
 MODEL = "claude-sonnet-5-5"
 # Facecam boxes (x,y,w,h as fractions of the frame) for streamers whose layout is known.
 CAM_PRESETS = {"caseoh_": "0,0.12,0.21,0.28"}
-HYPE = re.compile(r"\b(LUL|OMEGALUL|KEKW|LMAO|POG\w*|W|WTF|NO WAY|CLIP IT|CLIP|\?\?+|HOLY|INSANE)\b", re.I)
+LAUGH = re.compile(r"(?i)(?<!\w)(lul+|omegalul|kekw?|lmf?ao+|icant|rofl|ha(ha)+|hehe|dead|😂|🤣|💀)(?!\w)")
+CRAZY = re.compile(r"(?i)(?<!\w)(wtf|no way|no+|omg|holy|insane|crazy|clip it|clip|pog\w*|what the|\?{2,}|cooked|w+)(?!\w)")
+HYPE = re.compile(r"(?i)(?<!\w)(lul+|kekw?|pog\w*|wtf|no way|omg|holy|insane|clip it)(?!\w)")  # kept for compatibility
 
 
 class SpikeDetector:
@@ -176,7 +178,10 @@ def make_clip(channel, t, buf_dir, out_dir, before, after, chatlog, game, credit
     log = list(chatlog)
     window = [x for x in log if t - before <= x[0] <= t + after]
     texts = [x[2] for x in log if t - 30 <= x[0] <= t + 2]
-    title, caption, tags = describe(channel, texts, game)
+    laughs = sum(1 for x in texts if LAUGH.search(x))
+    shocks = sum(1 for x in texts if CRAZY.search(x))
+    mood = "chat was laughing" if laughs >= shocks else "chat was shocked and hyped"
+    title, caption, tags = describe(channel, texts, game, mood)
     slug = re.sub(r"[^A-Za-z0-9]+", "-", title).strip("-")[:40]
     stamp = time.strftime("%H%M%S", time.localtime(t))
     name = out_dir / f"{channel}_{stamp}_{slug}.mp4"
@@ -210,13 +215,13 @@ def make_clip(channel, t, buf_dir, out_dir, before, after, chatlog, game, credit
     print(f"[{channel}] clip saved: {name.name}  <- {title}")
 
 
-def describe(channel, msgs, game):
+def describe(channel, msgs, game, mood="chat exploded"):
     fallback = ("CHAT WENT CRAZY", f"Chat lost it on {channel}'s stream", "#clips #gaming")
     if not os.environ.get("ANTHROPIC_API_KEY"):
         return fallback
     try:
         import anthropic
-        prompt = (f"Chat on {channel}'s {game or 'stream'} exploded. Here are the chat messages from the moment:\n"
+        prompt = (f"On {channel}'s {game or 'stream'} {mood}. Here are the chat messages from the moment:\n"
                   + "\n".join(msgs[-40:]) + "\n\nWrite a clip hook title (2-6 words, ALL CAPS, no spoilers, nothing the "
                   "chat doesn't support), a post caption under 150 chars, and 3-5 hashtags. Return only JSON: "
                   '{"title":"","caption":"","hashtags":""}')
@@ -237,7 +242,7 @@ def watch(channel, a, out_dir, camspec):
     def on_msg(user, text):
         now = time.time()
         chatlog.append((now, user, text.strip()))
-        if det.add(now, 2.0 if HYPE.search(text) else 1.0):
+        if det.add(now, 3.0 if (LAUGH.search(text) or CRAZY.search(text)) else 1.0):
             print(f"[{channel}] chat spike!")
             threading.Thread(target=make_clip, daemon=True, args=(
                 channel, int(now), buf, out_dir, a.before, a.after, chatlog, a.game, a.credit,
