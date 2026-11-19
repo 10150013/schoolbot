@@ -75,16 +75,25 @@ def chat_loop(channel, on_msg):
 
 
 def record(channel, buf_dir):
-    """Rolling buffer: 5s .ts segments named by start epoch. Restarts if the stream drops."""
+    """Rolling buffer: 5s .ts segments named by start epoch. Retries quietly if the stream is offline."""
     buf_dir.mkdir(parents=True, exist_ok=True)
+    fails = 0
     while True:
+        started = time.time()
         sl = subprocess.Popen(["streamlink", f"twitch.tv/{channel}", "best", "-O"],
                               stdout=subprocess.PIPE, stderr=subprocess.DEVNULL)
-        subprocess.run(["ffmpeg", "-loglevel", "error", "-i", "pipe:0", "-c", "copy", "-f", "segment",
+        subprocess.run(["ffmpeg", "-loglevel", "quiet", "-i", "pipe:0", "-c", "copy", "-f", "segment",
                         "-segment_time", "5", "-strftime", "1", "-reset_timestamps", "1",
-                        str(buf_dir / "%s.ts")], stdin=sl.stdout)
+                        str(buf_dir / "%s.ts")], stdin=sl.stdout, stderr=subprocess.DEVNULL)
         sl.kill()
-        time.sleep(15)  # offline or dropped; try again
+        if time.time() - started < 30:  # never really started: offline, ad break or blocked
+            fails += 1
+            if fails in (1, 10) or fails % 60 == 0:
+                print(f"[{channel}] no video (offline or ad break?), retrying quietly")
+            time.sleep(min(60, 10 * fails))
+        else:
+            fails = 0
+            time.sleep(5)
 
 
 def prune(buf_dir, keep=330):
